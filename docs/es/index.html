@@ -1,0 +1,1564 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Guía de operación de nsconv</title>
+<meta name="description" content="Instale, configure y opere el conversor de Huawei NetStream, compatible con Illumio FlowLink.">
+<!-- Built by scripts/operator-guide/build_docs.py from scripts/operator-guide/src/. Edit the sources, not this file. -->
+<style>
+:root {
+  --bg: #ffffff; --fg: #1f2933; --muted: #5b6672; --line: #e1e6eb; --soft: #f3f5f7; --side: #f7f9fa;
+  --accent: #1f6f8b; --accent-soft: #e5f0f4; --code: #f3f5f7; --c-comment: #6b7785; --c-cmd: #1f6f8b; --c-param: #8250df;
+  --info: #1f6f8b; --info-soft: #eaf3f7; --warn: #9a6700; --warn-soft: #fff7e0; --crit: #b42318; --crit-soft: #fdeeec;
+  --ok: #1a7f37; --ok-soft: #eaf6ed;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, "DejaVu Sans Mono", "Liberation Mono", monospace;
+  --side-w: 290px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #14181d; --fg: #dfe5ec; --muted: #98a3af; --line: #2b333c; --soft: #1c2229; --side: #181d23;
+    --accent: #62b6d3; --accent-soft: #1b313a; --code: #1b2128; --c-comment: #8994a0; --c-cmd: #62b6d3; --c-param: #c6a6ff;
+    --info: #62b6d3; --info-soft: #18303a; --warn: #e3b341; --warn-soft: #30290f; --crit: #ff8a7a; --crit-soft: #3a1d1a;
+    --ok: #5fcf7f; --ok-soft: #173020;
+  }
+}
+* { box-sizing: border-box; }
+html { scroll-padding-top: 16px; -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.6 var(--sans); }
+a { color: var(--accent); }
+code, pre, .tui { font-family: var(--mono); font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
+code { font-size: .88em; background: var(--soft); padding: .08em .3em; border-radius: 4px; overflow-wrap: anywhere; }
+.skip { position: absolute; left: -999px; top: 8px; background: var(--bg); padding: 6px 10px; z-index: 30; }
+.skip:focus { left: 8px; }
+
+/* layout */
+.sidebar { position: fixed; top: 0; bottom: 0; left: 0; width: var(--side-w); overflow-y: auto; background: var(--side);
+  border-right: 1px solid var(--line); padding: 20px 14px 24px; font-size: 14px; line-height: 1.35; z-index: 20; }
+main { margin-left: var(--side-w); padding: 32px 48px 48px; }
+.wrap { max-width: 900px; }
+.side-title { font-weight: 700; font-size: 17px; color: var(--fg); text-decoration: none; display: block; margin: 0 6px 2px; }
+.side-sub { color: var(--muted); font-size: 12.5px; margin: 0 6px 12px; }
+.lang { margin: 0 6px 14px; font-size: 13px; color: var(--muted); }
+.lang a, .lang strong { padding: 2px 7px; border: 1px solid var(--line); border-radius: 5px; text-decoration: none; }
+.lang strong { color: var(--fg); background: var(--bg); }
+.nav, .nav ul { list-style: none; margin: 0; padding: 0; }
+.nav .group { margin: 16px 6px 6px; font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+.nav a { display: block; padding: 5px 8px; border-left: 3px solid transparent; border-radius: 0 5px 5px 0; color: var(--fg); text-decoration: none; }
+.nav ul a { padding: 3px 8px 3px 20px; font-size: 13px; color: var(--muted); }
+.nav a:hover { background: var(--soft); }
+.nav a.active { border-left-color: var(--accent); background: var(--accent-soft); color: var(--fg); font-weight: 600; }
+.nav li.current > a { color: var(--fg); font-weight: 600; }
+.side-foot { margin: 22px 6px 0; padding-top: 14px; border-top: 1px solid var(--line); font-size: 13px; display: grid; gap: 8px; }
+.side-foot a { text-decoration: none; }
+.topbar, .navtoggle { display: none; }
+
+/* document head and footer */
+.doc-head { border-bottom: 1px solid var(--line); padding-bottom: 20px; margin-bottom: 8px; }
+.kicker { color: var(--muted); font-size: 13px; letter-spacing: .04em; margin: 0 0 6px; }
+h1 { font-size: 34px; line-height: 1.2; margin: 0 0 10px; letter-spacing: -.01em; }
+.lead { font-size: 18px; color: var(--muted); margin: 0 0 18px; }
+.notice { border: 1px solid var(--warn); background: var(--warn-soft); border-radius: 8px; padding: 10px 14px; font-size: 14.5px; }
+.notice strong { color: var(--warn); }
+footer.doc-foot { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13.5px; }
+footer.doc-foot p { margin: 0 0 8px; }
+
+/* content */
+h2 { font-size: 26px; line-height: 1.25; margin: 0 0 14px; padding-top: 8px; }
+h3 { font-size: 19px; margin: 28px 0 8px; }
+h4 { font-size: 16px; margin: 0 0 4px; }
+.section { padding-top: 32px; }
+.part { margin-top: 64px; padding: 26px 0 8px; border-top: 3px solid var(--accent); }
+.part h1 { font-size: 30px; }
+p, ul, ol { margin: 0 0 14px; }
+li { margin: 4px 0; }
+.tw { overflow-x: auto; margin: 12px 0 18px; }
+table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+th, td { text-align: left; vertical-align: top; padding: 7px 10px; border-bottom: 1px solid var(--line); }
+th { background: var(--soft); font-weight: 600; }
+table.ref td:first-child code { white-space: nowrap; }
+pre { background: var(--code); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; margin: 10px 0 18px;
+  overflow-x: auto; font-size: 13.5px; line-height: 1.5; white-space: pre; }
+pre .label { display: block; margin: -4px 0 8px; font: 600 11px/1.4 var(--sans); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+pre .comment { color: var(--c-comment); } pre .cmdlet { color: var(--c-cmd); font-weight: 600; } pre .param { color: var(--c-param); }
+.code { position: relative; }
+.copy { position: absolute; top: 6px; right: 6px; font: 12px var(--sans); color: var(--muted); background: var(--bg);
+  border: 1px solid var(--line); border-radius: 5px; padding: 2px 8px; cursor: pointer; }
+.copy:hover { color: var(--fg); }
+.code-multipart pre { margin: 0; border-radius: 0; border-top-width: 0; }
+.code-multipart .code:first-child pre { border-radius: 8px 8px 0 0; border-top-width: 1px; }
+.code-multipart .code:last-child pre { border-radius: 0 0 8px 8px; margin-bottom: 18px; }
+figure.diagram { margin: 18px 0 22px; border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; overflow-x: auto; }
+figure.diagram figcaption { font-weight: 600; font-size: 14px; color: var(--muted); margin-bottom: 8px; }
+figure.diagram svg { display: block; width: 100%; min-width: 560px; height: auto; font-family: var(--sans); }
+svg [fill="#F3F5F7"] { fill: var(--soft); } svg [stroke="#2B3440"] { stroke: var(--fg); } svg [fill="#2B3440"] { fill: var(--fg); }
+svg [fill="#5B6672"] { fill: var(--muted); } svg [fill="#1F6F8B"] { fill: var(--accent); } svg [stroke="#1F6F8B"] { stroke: var(--accent); }
+svg [fill="white"] { fill: var(--bg); }
+.callout { border-left: 4px solid var(--info); background: var(--info-soft); border-radius: 0 8px 8px 0; padding: 10px 14px; margin: 14px 0 18px; }
+.callout-label { font-weight: 700; margin-bottom: 4px; }
+.callout-warning { border-color: var(--warn); background: var(--warn-soft); }
+.callout-critical { border-color: var(--crit); background: var(--crit-soft); }
+.callout-success { border-color: var(--ok); background: var(--ok-soft); }
+.phase-banner { display: flex; flex-wrap: wrap; gap: 10px; align-items: baseline; margin: 26px 0 10px; padding: 8px 12px;
+  border-radius: 8px; background: var(--soft); border: 1px solid var(--line); }
+.phase-num { font-size: 12px; font-weight: 700; letter-spacing: .06em; color: var(--accent); }
+.phase-title { font-weight: 600; }
+.step { display: flex; gap: 12px; margin: 16px 0 8px; }
+.step-number { flex: none; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: var(--bg);
+  display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
+.step-content p { margin: 0; }
+ul.checklist { list-style: none; padding-left: 0; }
+ul.checklist li { padding-left: 28px; position: relative; }
+ul.checklist li::before { content: "\2610"; position: absolute; left: 4px; color: var(--accent); }
+sup.ref { font-size: .7em; color: var(--muted); }
+.ref-list { margin: 22px 0 0; padding: 10px 14px; border-radius: 8px; background: var(--soft); font-size: 13px; color: var(--muted); }
+.ref-title { font-weight: 700; text-transform: uppercase; letter-spacing: .06em; font-size: 11px; margin-bottom: 4px; }
+.ref-list ol { margin: 0; padding-left: 20px; }
+.ref-list a { overflow-wrap: anywhere; }
+.tui { font-size: 11.5px; line-height: 1.3; white-space: pre; background: #1e1e1e; color: #e6e6e6; padding: 10px 12px;
+  border-radius: 8px; margin: 10px 0 20px; overflow-x: auto; max-width: 100%; }
+.print-only { display: none; }
+
+/* phone and tablet */
+@media (max-width: 960px) {
+  .topbar { display: flex; position: sticky; top: 0; z-index: 25; align-items: center; gap: 12px; padding: 10px 16px;
+    background: var(--side); border-bottom: 1px solid var(--line); }
+  .topbar label { border: 1px solid var(--line); border-radius: 6px; padding: 4px 12px; cursor: pointer; font-size: 14px; background: var(--bg); }
+  .topbar span { font-weight: 600; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .sidebar { display: none; top: 49px; width: 100%; max-width: 380px; box-shadow: 0 8px 24px rgba(0,0,0,.18); }
+  .navtoggle:checked ~ .sidebar { display: block; }
+  main { margin-left: 0; padding: 20px 16px 40px; }
+  html { scroll-padding-top: 64px; }
+  h1 { font-size: 27px; } h2 { font-size: 22px; } .lead { font-size: 16px; }
+  .tui { font-size: 9px; }
+}
+
+/* print (WeasyPrint / browser) */
+@media print {
+  @page { size: A4; margin: 16mm 14mm 18mm;
+    @bottom-left { content: "Guía de operación de nsconv · Herramienta comunitaria no oficial, sin soporte de Illumio"; font: 7.5pt var(--sans); color: #5b6672; }
+    @bottom-right { content: counter(page) " / " counter(pages); font: 7.5pt var(--sans); color: #5b6672; } }
+  @page :first { @bottom-left { content: none; } @bottom-right { content: none; } }
+  :root { --bg: #fff; --fg: #1f2933; }
+  body { font-size: 10pt; line-height: 1.5; }
+  .sidebar, .topbar, .copy, .doc-head, .skip { display: none !important; }
+  main { margin: 0; padding: 0; }
+  .wrap { max-width: none; }
+  .print-only { display: block; }
+  .cover { height: 255mm; display: flex; flex-direction: column; break-after: page; }
+  .cover .kicker { margin-top: 50mm; }
+  .cover h1 { font-size: 30pt; }
+  .cover .spacer { flex: 1; }
+  .print-toc { break-after: page; }
+  .print-toc h2 { font-size: 18pt; }
+  .print-toc ol { list-style: none; padding: 0; }
+  .print-toc li { margin: 6px 0; }
+  .print-toc li.group { font-weight: 700; margin-top: 14px; text-transform: uppercase; font-size: 9pt; color: #5b6672; }
+  .print-toc a { color: inherit; text-decoration: none; }
+  .print-toc a::after { content: leader('.') target-counter(attr(href), page); }
+  .section, .part { break-before: page; padding-top: 0; margin-top: 0; }
+  .part { border-top: 0; padding-top: 60mm; }
+  .part + .section { break-before: page; }
+  h2 { font-size: 17pt; } h3 { font-size: 12.5pt; break-after: avoid; } h4 { break-after: avoid; }
+  pre { white-space: pre-wrap; font-size: 8.3pt; break-inside: avoid; overflow: hidden; }
+  table { font-size: 8.8pt; } tr { break-inside: avoid; } .tw { overflow: visible; }
+  figure.diagram { break-inside: avoid; } figure.diagram svg { min-width: 0; }
+  .tui { font-size: 6.3pt; padding: 6px 8px; overflow: hidden; break-inside: avoid; }
+  .tui-shot { break-inside: avoid; }
+  .step { break-inside: avoid; break-after: avoid; }
+  a { color: inherit; }
+  footer.doc-foot { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Ir al contenido</a>
+<input type="checkbox" id="navtoggle" class="navtoggle" aria-hidden="true">
+<div class="topbar"><label for="navtoggle">Menú</label><span>Guía de operación de nsconv</span></div>
+<nav class="sidebar" id="sidebar" aria-label="Contenido">
+  <a class="side-title" href="#top">nsconv</a>
+  <div class="side-sub">nsconv 0.1.0-rc1</div>
+  <div class="lang"><strong>Español</strong> <a href="../index.html" hreflang="en" lang="en">English</a></div>
+  <ul class="nav">
+    <li class="group">Guía de operación</li>
+    <li><a href="#sec-overview">Qué hace nsconv</a><ul>
+      <li><a href="#sec-overview-que-ocurre-con-cada-flujo">Qué ocurre con cada flujo</a></li>
+      <li><a href="#sec-overview-modos-de-despliegue">Modos de despliegue</a></li>
+    </ul></li>
+    <li><a href="#sec-requirements">Requisitos</a><ul>
+      <li><a href="#sec-requirements-puertos">Puertos</a></li>
+      <li><a href="#sec-requirements-archivos-de-la-version-0-1-0-rc1">Archivos de la versión (0.1.0-rc1)</a></li>
+    </ul></li>
+    <li><a href="#sec-install">Instalación</a><ul>
+      <li><a href="#sec-install-firewall-firewalld">Firewall (firewalld)</a></li>
+      <li><a href="#sec-install-selinux">SELinux</a></li>
+    </ul></li>
+    <li><a href="#sec-configure">Configurar nsconv</a><ul>
+      <li><a href="#sec-configure-cambios-habituales">Cambios habituales</a></li>
+      <li><a href="#sec-configure-recargar-o-reiniciar">Recargar o reiniciar</a></li>
+      <li><a href="#sec-configure-una-segunda-salida">Una segunda salida</a></li>
+    </ul></li>
+    <li><a href="#sec-flowlink">Configurar FlowLink</a><ul>
+      <li><a href="#sec-flowlink-mismo-equipo-source-address-exporter-por-defecto">Mismo equipo, source_address = "exporter" (por defecto)</a></li>
+      <li><a href="#sec-flowlink-source-address-local">source_address = "local"</a></li>
+      <li><a href="#sec-flowlink-salida-netflow-v9-o-v5">Salida NetFlow v9 o v5</a></li>
+      <li><a href="#sec-flowlink-que-version-de-netstream-usar-en-el-switch">Qué versión de NetStream usar en el switch</a></li>
+    </ul></li>
+    <li><a href="#sec-huawei">Configurar los switches Huawei</a><ul>
+      <li><a href="#sec-huawei-serie-s-ar-estilo-v200-flujos-originales-netflow">Serie S / AR (estilo V200): flujos originales NetFlow v9</a></li>
+      <li><a href="#sec-huawei-cloudengine-sintaxis-v200r019c10-registro-flexib">CloudEngine (sintaxis V200R019C10): registro flexible NetFlow v9</a></li>
+      <li><a href="#sec-huawei-ne40e-netengine-8000-vrp8-ipfix-distribuido-solo">NE40E / NetEngine 8000 (VRP8): IPFIX distribuido, solo entrada</a></li>
+    </ul></li>
+    <li><a href="#sec-operate">Operación</a><ul>
+      <li><a href="#sec-operate-estado">Estado</a></li>
+      <li><a href="#sec-operate-alertas">Alertas</a></li>
+      <li><a href="#sec-operate-logs">Logs</a></li>
+      <li><a href="#sec-operate-capturar-un-switch-para-analisis">Capturar un switch para análisis</a></li>
+      <li><a href="#sec-operate-actualizar">Actualizar</a></li>
+      <li><a href="#sec-operate-desinstalar">Desinstalar</a></li>
+    </ul></li>
+    <li><a href="#sec-tui">Recorrido por la TUI</a><ul>
+      <li><a href="#sec-tui-1-overview">1 Overview</a></li>
+      <li><a href="#sec-tui-2-alerts">2 Alerts</a></li>
+      <li><a href="#sec-tui-3-exporters">3 Exporters</a></li>
+      <li><a href="#sec-tui-4-templates">4 Templates</a></li>
+      <li><a href="#sec-tui-5-outputs">5 Outputs</a></li>
+      <li><a href="#sec-tui-6-config">6 Config</a></li>
+      <li><a href="#sec-tui-7-logs">7 Logs</a></li>
+      <li><a href="#sec-tui-teclas">Teclas</a></li>
+    </ul></li>
+    <li><a href="#sec-troubleshooting">Solución de problemas por síntoma</a><ul>
+      <li><a href="#sec-troubleshooting-no-llega-nada-datagrams-in-sigue-en-0">No llega nada (datagrams_in sigue en 0)</a></li>
+      <li><a href="#sec-troubleshooting-datos-sin-plantilla-no-template-alerta-no-templa">Datos sin plantilla (no_template, alerta no-template)</a></li>
+      <li><a href="#sec-troubleshooting-tasa-de-muestreo-desconocida-alerta-sampling-def">Tasa de muestreo desconocida (alerta sampling-default)</a></li>
+      <li><a href="#sec-troubleshooting-desfase-de-reloj-restamped-alerta-restamped">Desfase de reloj (restamped, alerta restamped)</a></li>
+      <li><a href="#sec-troubleshooting-flowlink-no-muestra-nada">FlowLink no muestra nada</a></li>
+      <li><a href="#sec-troubleshooting-v5-e-ipv6">v5 e IPv6</a></li>
+      <li><a href="#sec-troubleshooting-descartes-del-kernel-en-picos-de-trafico">Descartes del kernel en picos de tráfico</a></li>
+      <li><a href="#sec-troubleshooting-el-servicio-no-arranca-estado-203-exec">El servicio no arranca: estado 203/EXEC</a></li>
+    </ul></li>
+    <li><a href="#sec-reference">Referencia</a><ul>
+      <li><a href="#sec-reference-comandos">Comandos</a></li>
+      <li><a href="#sec-reference-claves-de-configuracion">Claves de configuración</a></li>
+      <li><a href="#sec-reference-contadores">Contadores</a></li>
+      <li><a href="#sec-reference-codigos-de-salida">Códigos de salida</a></li>
+      <li><a href="#sec-reference-archivos-y-rutas">Archivos y rutas</a></li>
+    </ul></li>
+    <li class="group"><a href="#capture-kit">Kit de captura</a></li>
+    <li><a href="#ck-overview">Resumen</a><ul>
+      <li><a href="#ck-overview-que-responde-la-evidencia">Qué responde la evidencia</a></li>
+      <li><a href="#ck-overview-que-necesita">Qué necesita</a></li>
+    </ul></li>
+    <li><a href="#ck-capture">Parte 1: Capture el tráfico NetStream</a></li>
+    <li><a href="#ck-commands">Parte 2: Reúna la información de los switches</a><ul>
+      <li><a href="#ck-commands-2-1-modelo-software-y-tarjetas-de-linea">2.1 Modelo, software y tarjetas de línea</a></li>
+      <li><a href="#ck-commands-2-2-reloj-zona-horaria-y-ntp">2.2 Reloj, zona horaria y NTP</a></li>
+      <li><a href="#ck-commands-2-3-configuracion-de-netstream">2.3 Configuración de NetStream</a></li>
+      <li><a href="#ck-commands-2-4-estado-y-estadisticas-de-netstream">2.4 Estado y estadísticas de NetStream</a></li>
+      <li><a href="#ck-commands-que-buscamos-en-la-configuracion">Qué buscamos en la configuración</a></li>
+    </ul></li>
+    <li><a href="#ck-questionnaire">Parte 3: Cuestionario</a><ul>
+      <li><a href="#ck-questionnaire-para-cada-switch">Para cada switch</a></li>
+      <li><a href="#ck-questionnaire-general">General</a></li>
+    </ul></li>
+    <li><a href="#ck-return">Parte 4: Nombre y envíe los archivos</a><ul>
+      <li><a href="#ck-return-nombres-de-archivo">Nombres de archivo</a></li>
+      <li><a href="#ck-return-empaquete-y-envie">Empaquete y envíe</a></li>
+      <li><a href="#ck-return-lista-de-verificacion-final">Lista de verificación final</a></li>
+    </ul></li>
+    <li class="group"><a href="https://github.com/roschereric/netstream-converter/tree/main/releases">Descargas</a></li>
+  </ul>
+  <div class="side-foot">
+    <a href="../pdf/nsconv-guide-es.pdf">Versión PDF</a>
+    <a href="https://github.com/roschereric/netstream-converter/tree/main/releases">Descargas</a>
+    <a href="https://github.com/roschereric/netstream-converter">Código y versiones</a>
+  </div>
+</nav>
+<main id="main">
+<div class="wrap">
+<section class="print-only cover">
+  <p class="kicker">nsconv 0.1.0-rc1 · Octubre 2026</p>
+  <h1>Guía de operación de nsconv</h1>
+  <p class="lead">Instale, configure y opere el conversor de Huawei NetStream, compatible con Illumio FlowLink.</p>
+  <div class="spacer"></div>
+  <p class="notice"><strong>Herramienta comunitaria no oficial.</strong> nsconv no es un producto de Illumio y no tiene soporte de Illumio. Se entrega tal cual ("as is"), sin garantía de ningún tipo (licencia MIT).</p>
+  <p class="kicker">Código y versiones: <a href="https://github.com/roschereric/netstream-converter">github.com/roschereric/netstream-converter</a></p>
+</section>
+<section class="print-only print-toc">
+  <h2>Contenido</h2>
+  <ol>
+    <li class="group">Guía de operación</li>
+    <li><a href="#sec-overview">Qué hace nsconv</a></li>
+    <li><a href="#sec-requirements">Requisitos</a></li>
+    <li><a href="#sec-install">Instalación</a></li>
+    <li><a href="#sec-configure">Configurar nsconv</a></li>
+    <li><a href="#sec-flowlink">Configurar FlowLink</a></li>
+    <li><a href="#sec-huawei">Configurar los switches Huawei</a></li>
+    <li><a href="#sec-operate">Operación</a></li>
+    <li><a href="#sec-tui">Recorrido por la TUI</a></li>
+    <li><a href="#sec-troubleshooting">Solución de problemas por síntoma</a></li>
+    <li><a href="#sec-reference">Referencia</a></li>
+    <li class="group"><a href="#capture-kit">Kit de captura</a></li>
+    <li><a href="#ck-overview">Resumen</a></li>
+    <li><a href="#ck-capture">Parte 1: Capture el tráfico NetStream</a></li>
+    <li><a href="#ck-commands">Parte 2: Reúna la información de los switches</a></li>
+    <li><a href="#ck-questionnaire">Parte 3: Cuestionario</a></li>
+    <li><a href="#ck-return">Parte 4: Nombre y envíe los archivos</a></li>
+  </ol>
+</section>
+<header class="doc-head" id="top">
+  <p class="kicker">nsconv 0.1.0-rc1 · Octubre 2026</p>
+  <h1>Guía de operación de nsconv</h1>
+  <p class="lead">Instale, configure y opere el conversor de Huawei NetStream, compatible con Illumio FlowLink.</p>
+  <p class="notice"><strong>Herramienta comunitaria no oficial.</strong> nsconv no es un producto de Illumio y no tiene soporte de Illumio. Se entrega tal cual ("as is"), sin garantía de ningún tipo (licencia MIT).</p>
+</header>
+<div class="section" id="sec-overview">
+  <h2>Qué hace nsconv</h2>
+  <p>Los switches y routers Huawei exportan sus flujos como <strong>NetStream</strong>: NetFlow v5, NetFlow v9 o IPFIX con particularidades de Huawei (un campo de versión v5 modificado, campos privados, marcas de tiempo relativas al uptime, intervalos largos de refresco de plantillas, tasas de muestreo que a menudo no se informan). Illumio FlowLink lee NetFlow v5, v7, v9, IPFIX y sFlow<sup class="ref">1</sup>. <strong>nsconv</strong> se ubica entre ambos: recibe NetStream, lo decodifica resolviendo las particularidades de Huawei y vuelve a enviar cada flujo como IPFIX estándar y limpio (por defecto), NetFlow v9 o NetFlow v5 a FlowLink.</p>
+  <p>Use nsconv cuando equipos Huawei deban alimentar a Illumio FlowLink. Corre como un servicio pequeño (<code>nsconv.service</code>) en el equipo de FlowLink o en un equipo propio. Un único binario, <code>nsconvctl</code>, ejecuta el servicio y es también la herramienta de línea de comandos y la interfaz de terminal.</p>
+
+  <figure class="diagram">
+    <figcaption>Flujo de datos, despliegue en el mismo equipo (por defecto)</figcaption>
+    <svg viewBox="0 0 700 250" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="ah" viewBox="0 0 10 8" refX="10" refY="4" markerWidth="10" markerHeight="8" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#2B3440"/></marker></defs>
+      <rect x="10" y="50" width="130" height="100" rx="8" fill="#F3F5F7" stroke="#2B3440" stroke-width="2"/>
+      <text x="75" y="82" text-anchor="middle" font-weight="700" font-size="13" fill="#2B3440">Switches</text>
+      <text x="75" y="99" text-anchor="middle" font-weight="700" font-size="13" fill="#2B3440">Huawei</text>
+      <text x="75" y="120" text-anchor="middle" font-size="10" fill="#5B6672">ejemplos:</text>
+      <text x="75" y="134" text-anchor="middle" font-size="10" fill="#5B6672">198.51.100.21, .22</text>
+      <rect x="185" y="20" width="330" height="160" rx="10" fill="none" stroke="#1F6F8B" stroke-width="2" stroke-dasharray="6,3"/>
+      <text x="350" y="40" text-anchor="middle" font-size="10" fill="#1F6F8B" font-weight="600">Equipo de FlowLink, RHEL 8 (ejemplo 192.0.2.10)</text>
+      <rect x="205" y="60" width="120" height="90" rx="8" fill="#F3F5F7" stroke="#2B3440" stroke-width="2"/>
+      <text x="265" y="98" text-anchor="middle" font-weight="700" font-size="13" fill="#2B3440">nsconv</text>
+      <text x="265" y="116" text-anchor="middle" font-size="10" fill="#5B6672">nsconv.service</text>
+      <rect x="375" y="60" width="120" height="90" rx="8" fill="#F3F5F7" stroke="#2B3440" stroke-width="2"/>
+      <text x="435" y="98" text-anchor="middle" font-weight="700" font-size="13" fill="#2B3440">FlowLink</text>
+      <text x="435" y="116" text-anchor="middle" font-size="10" fill="#5B6672">illumio-flowlink</text>
+      <rect x="560" y="50" width="130" height="100" rx="8" fill="#F3F5F7" stroke="#2B3440" stroke-width="2"/>
+      <text x="625" y="92" text-anchor="middle" font-weight="700" font-size="13" fill="#2B3440">PCE de Illumio</text>
+      <text x="625" y="110" text-anchor="middle" font-size="11" fill="#5B6672">SaaS</text>
+      <line x1="140" y1="105" x2="205" y2="105" stroke="#2B3440" stroke-width="1.5" marker-end="url(#ah)"/>
+      <line x1="325" y1="105" x2="375" y2="105" stroke="#2B3440" stroke-width="1.5" marker-end="url(#ah)"/>
+      <line x1="495" y1="105" x2="560" y2="105" stroke="#2B3440" stroke-width="1.5" marker-end="url(#ah)"/>
+      <circle cx="172" cy="88" r="10" fill="#1F6F8B"/><text x="172" y="92" text-anchor="middle" font-size="11" fill="white" font-weight="700">1</text>
+      <circle cx="350" cy="88" r="10" fill="#1F6F8B"/><text x="350" y="92" text-anchor="middle" font-size="11" fill="white" font-weight="700">2</text>
+      <circle cx="527" cy="88" r="10" fill="#1F6F8B"/><text x="527" y="92" text-anchor="middle" font-size="11" fill="white" font-weight="700">3</text>
+      <text x="20" y="205" font-size="11" fill="#2B3440"><tspan font-weight="700" fill="#1F6F8B">1</tspan>  NetStream v5 / v9 / IPFIX por UDP al puerto 9996 del equipo (lista allow de IP de switches)</text>
+      <text x="20" y="223" font-size="11" fill="#2B3440"><tspan font-weight="700" fill="#1F6F8B">2</tspan>  IPFIX limpio a 127.0.0.1:4739, enviado desde la IP y el puerto de cada switch</text>
+      <text x="20" y="241" font-size="11" fill="#2B3440"><tspan font-weight="700" fill="#1F6F8B">3</tspan>  FlowLink envía los resúmenes de flujos al PCE (su conexión habitual)</text>
+    </svg>
+  </figure>
+
+  <h3 id="sec-overview-que-ocurre-con-cada-flujo">Qué ocurre con cada flujo</h3>
+  <ul>
+    <li><strong>Solo se acepta de switches autorizados.</strong> Los datagramas de orígenes fuera de la lista allow de la entrada se descartan y se cuentan. Una lista vacía descarta todo.</li>
+    <li><strong>Se decodifica resolviendo las particularidades de Huawei</strong>: v5 con el bit de dirección, plantillas v9 e IPFIX por switch, Source ID por tarjeta de línea, tiempos IPFIX relativos al uptime, campos repetidos. Las plantillas aprendidas se guardan, de modo que un reinicio no espera el próximo refresco de plantillas del switch.</li>
+    <li><strong>Se reenvía con una plantilla fija y estándar</strong> (solo campos IANA, sin relleno, sin campos de fabricante), marcas de tiempo absolutas, el conteo de bytes y la tasa de muestreo en cada registro. Los contadores no se escalan: FlowLink recibe los números originales y la tasa.</li>
+    <li><strong>Se conserva la identidad del exportador.</strong> Por defecto los flujos de cada switch salen de nsconv desde la IP y el puerto de ese switch, de modo que FlowLink sigue viendo cada switch como un emisor propio.</li>
+    <li><strong>Corrección de reloj.</strong> Si el reloj de un switch difiere en más de 5 minutos (zona horaria, sin NTP), los tiempos de los flujos se corrigen a la hora de recepción para que FlowLink no los descarte.</li>
+    <li><strong>Todo se cuenta.</strong> Cada flujo descartado o modificado tiene un contador con nombre en <code>nsconvctl status</code>, la TUI y el journal.</li>
+  </ul>
+
+  <h3 id="sec-overview-modos-de-despliegue">Modos de despliegue</h3>
+  <div class="tw"><table>
+    <tr><th>Modo</th><th>Dónde corre nsconv</th><th>Ajuste de la salida</th><th><code>remote_addrs</code> de FlowLink</th></tr>
+    <tr><td>Mismo equipo (recomendado)</td><td>En el equipo de FlowLink</td><td><code>source_address = "exporter"</code> (por defecto), destino <code>127.0.0.1:4739</code></td><td>Las IP de los switches</td></tr>
+    <tr><td>Mismo equipo, un solo emisor</td><td>En el equipo de FlowLink</td><td><code>source_address = "local"</code></td><td><code>127.0.0.1</code></td></tr>
+    <tr><td>Independiente, mismo segmento L2</td><td>Equipo propio, misma subred que FlowLink</td><td><code>source_address = "exporter"</code>, destino = equipo de FlowLink</td><td>Las IP de los switches</td></tr>
+    <tr><td>Independiente, enrutado</td><td>Equipo propio, con routers entre medio</td><td><code>source_address = "local"</code>, destino = equipo de FlowLink</td><td>La IP del equipo de nsconv</td></tr>
+  </table></div>
+  <p>Con <code>exporter</code> los datagramas llevan como origen las direcciones de los switches. Eso funciona en el mismo equipo y en el mismo segmento de capa 2. Si hay routers entre nsconv y FlowLink, use <code>local</code>: los routers con filtros anti-spoofing descartan paquetes cuyo origen no pertenece a la red emisora.</p>
+  <div class="ref-list">
+    <div class="ref-title">Fuentes</div>
+    <ol>
+      <li><a href="https://product-docs-repo.illumio.com/Tech-Docs/Core/26.1/Install-Upgrade-Admin/out/en/flowlink-2-0-0-configuration-and-usage/configure-flowlink/ingested-flow-types.html">Illumio FlowLink 2.0 — Ingested flow types — product-docs-repo.illumio.com/Tech-Docs/Core/26.1/Install-Upgrade-Admin/out/en/flowlink-2-0-0-configuration-and-usage/configure-flowlink/ingested-flow-types.html</a></li>
+      <li><a href="https://info.support.huawei.com/info-finder/encyclopedia/en/NetStream.html">Huawei IP Encyclopedia — NetStream — info.support.huawei.com/info-finder/encyclopedia/en/NetStream.html</a></li>
+    </ol>
+  </div>
+</div>
+
+<div class="section" id="sec-requirements">
+  <h2>Requisitos</h2>
+  <div class="tw"><table>
+    <tr><th>Elemento</th><th>Requisito</th></tr>
+    <tr><td>Sistema operativo</td><td>RHEL, Rocky Linux o AlmaLinux 8 o 9, x86_64 (también se publican binarios aarch64). systemd, SELinux en modo enforcing y firewalld se admiten tal como vienen. Esta versión se probó de punta a punta en Rocky Linux 8.10.</td></tr>
+    <tr><td>Illumio FlowLink</td><td>1.4.0 o posterior; <strong>se recomienda 2.0.1</strong> (informa el conteo de bytes de todas las fuentes)<sup class="ref">1,2</sup>.</td></tr>
+    <tr><td>Acceso</td><td>root (o sudo) para instalar y cambiar la configuración; root o el grupo <code>nsconv</code> para leer el estado.</td></tr>
+    <tr><td>Recursos</td><td>Dos hilos con una entrada, pocos MB de memoria (límite de 128 MB en la unidad), sin escrituras a disco en el camino de datos.</td></tr>
+  </table></div>
+
+  <h3 id="sec-requirements-puertos">Puertos</h3>
+  <div class="tw"><table>
+    <tr><th>Puerto</th><th>Sentido</th><th>Uso</th></tr>
+    <tr><td>UDP 9996 (por defecto, <code>input.&lt;name&gt;.listen</code>)</td><td>Switches → nsconv</td><td>NetStream de los switches. Ábralo solo para las direcciones de los switches.</td></tr>
+    <tr><td>UDP 4739 (por defecto, <code>output.&lt;name&gt;.target</code>)</td><td>nsconv → FlowLink</td><td>Consumidor IPFIX de FlowLink. En el mismo equipo es tráfico de loopback, que firewalld acepta.</td></tr>
+    <tr><td><code>/run/nsconv/ctl.sock</code></td><td>Solo local</td><td>Socket de control para <code>nsconvctl</code> y la TUI. Sin puerto de red.</td></tr>
+  </table></div>
+  <p>FlowLink no tiene puertos por defecto: cada consumidor escucha en el puerto que indica su configuración<sup class="ref">3</sup>. nsconv nunca debe escuchar en un puerto que use FlowLink.</p>
+
+  <h3 id="sec-requirements-archivos-de-la-version-0-1-0-rc1">Archivos de la versión (0.1.0-rc1)</h3>
+  <p>Los archivos están en la carpeta <code>releases/0.1.0-rc1/</code> del repositorio público <code>github.com/roschereric/netstream-converter</code>.</p>
+  <div class="tw"><table>
+    <tr><th>Archivo</th><th>Uso</th></tr>
+    <tr><td><code>nsconv-0.1.0~rc1-1.x86_64.rpm</code>, <code>nsconv-0.1.0~rc1-1.aarch64.rpm</code></td><td>Paquete RPM (vía normal)</td></tr>
+    <tr><td><code>nsconvctl-0.1.0-rc1-x86_64-linux</code>, <code>nsconvctl-0.1.0-rc1-aarch64-linux</code></td><td>Binario estático para <code>nsconvctl install</code>, o para <code>decode</code> / <code>replay</code> en cualquier equipo Linux</td></tr>
+    <tr><td><code>SHA256SUMS</code></td><td>Sumas de verificación de todos los archivos</td></tr>
+    <tr><td><code>nsconv-0.1.0-rc1.cdx.json</code></td><td>Lista de materiales de software (CycloneDX)</td></tr>
+  </table></div>
+  <p>Esta versión de prueba no está firmada. Verifique los archivos descargados con <code>SHA256SUMS</code> antes de instalar:</p>
+<pre><span class="label">EQUIPO DE INSTALACIÓN</span>
+sha256sum -c SHA256SUMS --ignore-missing
+</pre>
+  <div class="ref-list">
+    <div class="ref-title">Fuentes</div>
+    <ol>
+      <li><a href="https://product-docs-repo.illumio.com/Tech-Docs/Core/24.5/Release-Notes/out/en/illumio-flowlink-release-notes-for-release-1-4-0/resolved-and-known-issues-in-flowlink-1-4-0.html">FlowLink 1.4.0 — Resolved and known issues — product-docs-repo.illumio.com/Tech-Docs/Core/24.5/Release-Notes/out/en/illumio-flowlink-release-notes-for-release-1-4-0/resolved-and-known-issues-in-flowlink-1-4-0.html</a></li>
+      <li><a href="https://product-docs-repo.illumio.com/Tech-Docs/Core/26.1/Release-Notes/out/en/flowlink-release-notes/illumio-flowlink-release-notes-2-0-1/what-s-new-in-flowlink-2-0-1.html">FlowLink 2.0.1 — What's new — product-docs-repo.illumio.com/Tech-Docs/Core/26.1/Release-Notes/out/en/flowlink-release-notes/illumio-flowlink-release-notes-2-0-1/what-s-new-in-flowlink-2-0-1.html</a></li>
+      <li><a href="https://product-docs-repo.illumio.com/Tech-Docs/Core/26.1/Install-Upgrade-Admin/out/en/flowlink-2-0-0-configuration-and-usage/configure-flowlink/ingested-flow-types.html">FlowLink 2.0 — Ingested flow types — product-docs-repo.illumio.com/Tech-Docs/Core/26.1/Install-Upgrade-Admin/out/en/flowlink-2-0-0-configuration-and-usage/configure-flowlink/ingested-flow-types.html</a></li>
+    </ol>
+  </div>
+</div>
+
+<div class="section" id="sec-install">
+  <h2>Instalación</h2>
+  <div class="phase-banner"><span class="phase-num">OPCIÓN A</span><span class="phase-title">Paquete RPM (recomendado)</span></div>
+<pre><span class="label">EQUIPO DE INSTALACIÓN (ROOT)</span>
+rpm -ivh nsconv-0.1.0~rc1-1.x86_64.rpm
+</pre>
+  <p>El paquete crea el usuario y el grupo de sistema <code>nsconv</code> e instala estos archivos. <strong>No</strong> habilita ni inicia el servicio y no abre ningún puerto del firewall.</p>
+  <div class="tw"><table>
+    <tr><th>Archivo</th><th>Contenido</th></tr>
+    <tr><td><code>/usr/bin/nsconvctl</code></td><td>El binario (servicio, CLI y TUI)</td></tr>
+    <tr><td><code>/usr/lib/systemd/system/nsconv.service</code></td><td>Unidad systemd con aislamiento reforzado</td></tr>
+    <tr><td><code>/etc/nsconv/nsconv.toml</code></td><td>Configuración (root:nsconv 0640, se conserva al actualizar)</td></tr>
+    <tr><td><code>/usr/lib/sysctl.d/90-nsconv.conf</code></td><td><code>net.core.rmem_max = 8388608</code>, se aplica al instalar salvo que el equipo ya use un valor mayor</td></tr>
+    <tr><td><code>/usr/share/doc/nsconv/README.md</code></td><td>README breve para el operador</td></tr>
+  </table></div>
+
+  <div class="phase-banner"><span class="phase-num">OPCIÓN B</span><span class="phase-title">Binario estático con nsconvctl install</span></div>
+  <p>Para equipos donde prefiera no instalar un RPM. <code>--dry-run</code> muestra antes cada paso:</p>
+<pre><span class="label">EQUIPO DE INSTALACIÓN (ROOT)</span>
+chmod 0755 nsconvctl-0.1.0-rc1-x86_64-linux
+./nsconvctl-0.1.0-rc1-x86_64-linux install --dry-run
+./nsconvctl-0.1.0-rc1-x86_64-linux install
+</pre>
+  <p>Copia el binario a <code>/usr/local/bin/nsconvctl</code>, crea el usuario y el grupo <code>nsconv</code>, escribe la unidad en <code>/etc/systemd/system/nsconv.service</code> y la configuración por defecto en <code>/etc/nsconv/nsconv.toml</code> (solo si no existe), y muestra las líneas <code>firewall-cmd</code> que debe ejecutar. <code>--enable</code> y <code>--now</code> además habilitan e inician el servicio. La instalación del binario no incluye el archivo sysctl; aumente usted el límite del búfer de recepción del kernel:</p>
+<pre><span class="label">EQUIPO DE INSTALACIÓN (ROOT)</span>
+echo 'net.core.rmem_max = 8388608' &gt; /etc/sysctl.d/90-nsconv.conf
+sysctl -w net.core.rmem_max=8388608
+</pre>
+
+  <h3 id="sec-install-firewall-firewalld">Firewall (firewalld)</h3>
+  <p>Abra el puerto de entrada solo para los switches, en una zona dedicada. El nombre de la zona y la red son ejemplos:</p>
+<pre><span class="label">EQUIPO DE INSTALACIÓN (ROOT)</span>
+firewall-cmd --permanent --new-zone=nsconv-exporters
+firewall-cmd --permanent --zone=nsconv-exporters --add-source=198.51.100.0/24
+firewall-cmd --permanent --zone=nsconv-exporters --add-port=9996/udp
+firewall-cmd --reload
+</pre>
+  <p>Si FlowLink corre en el mismo equipo y solo nsconv debe alimentarlo, mantenga el puerto de FlowLink (4739) cerrado hacia la red. El tráfico de nsconv a FlowLink queda en loopback.</p>
+
+  <h3 id="sec-install-selinux">SELinux</h3>
+  <p>No se necesita ningún módulo de política. Un binario en <code>/usr/bin</code> o <code>/usr/local/bin</code> tiene la etiqueta <code>bin_t</code> y systemd lo ejecuta en el dominio <code>unconfined_service_t</code><sup class="ref">2</sup>. Si copia el binario a mano desde otro directorio, restaure su etiqueta; una etiqueta incorrecta aparece como estado <code>203/EXEC</code> en <code>systemctl status nsconv</code>:</p>
+<pre><span class="label">EQUIPO DE INSTALACIÓN (ROOT)</span>
+restorecon -v /usr/local/bin/nsconvctl
+</pre>
+  <div class="ref-list">
+    <div class="ref-title">Fuentes</div>
+    <ol>
+      <li><a href="https://firewalld.org/documentation/zone/">firewalld — Zones — firewalld.org/documentation/zone/</a></li>
+      <li><a href="https://www.mankier.com/8/unconfined_service_selinux">unconfined_service_selinux(8) — www.mankier.com/8/unconfined_service_selinux</a></li>
+      <li><a href="https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/8/html/using_selinux/index">Red Hat Enterprise Linux 8 — Using SELinux — docs.redhat.com/en/documentation/red_hat_enterprise_linux/8/html/using_selinux/index</a></li>
+    </ol>
+  </div>
+</div>
+
+<div class="section" id="sec-configure">
+  <h2>Configurar nsconv</h2>
+  <p>La configuración es un archivo TOML, <code>/etc/nsconv/nsconv.toml</code>, con un <code>[[input]]</code> (adonde envían los switches) y uno o más <code>[[output]]</code> (adonde van los flujos). El archivo incluido tiene una entrada llamada <code>huawei</code> y una salida llamada <code>flowlink</code>; las claves se escriben como <code>input.huawei.allow</code>, <code>output.flowlink.target</code>, etc. La lista completa de claves está en la sección Referencia.</p>
+  <p><code>nsconvctl config set</code> cambia un valor, conserva los comentarios del archivo, valida el resultado, lo escribe y pide al servicio en ejecución que recargue. Un valor inválido se rechaza y el archivo no se toca.</p>
+
+  <div class="phase-banner"><span class="phase-num">PRIMER INICIO</span><span class="phase-title">Tres ajustes y arrancar</span></div>
+  <div class="step"><div class="step-number">1</div><div class="step-content"><h4>Autorice los switches</h4><p>IP individuales o CIDR. Mientras no se defina, se descarta cada datagrama.</p></div></div>
+<pre><span class="label">ROOT</span>
+nsconvctl config set input.huawei.allow '["198.51.100.0/24"]'
+</pre>
+  <div class="step"><div class="step-number">2</div><div class="step-content"><h4>Apunte la salida a FlowLink</h4><p>El valor por defecto es el consumidor IPFIX de FlowLink en el mismo equipo. Para un FlowLink en otro equipo use su dirección, por ejemplo <code>192.0.2.10:4739</code>.</p></div></div>
+<pre><span class="label">ROOT</span>
+nsconvctl config set output.flowlink.target 127.0.0.1:4739
+</pre>
+  <div class="step"><div class="step-number">3</div><div class="step-content"><h4>Inicie el servicio y verifíquelo</h4><p>Salud <code>ok</code> y un <code>flows_out</code> creciente indican que los flujos salen de nsconv.</p></div></div>
+<pre><span class="label">ROOT</span>
+systemctl enable --now nsconv
+nsconvctl status
+</pre>
+
+  <h3 id="sec-configure-cambios-habituales">Cambios habituales</h3>
+  <div class="tw"><table>
+    <tr><th>Objetivo</th><th>Comando (root)</th></tr>
+    <tr><td>Varias redes de switches</td><td><code>nsconvctl config set input.huawei.allow '["198.51.100.0/24", "203.0.113.5"]'</code></td></tr>
+    <tr><td>Muestreo 1:2048 no informado</td><td><code>nsconvctl config set input.huawei.sampling_rate 2048</code></td></tr>
+    <tr><td>Un switch muestrea distinto</td><td><code>nsconvctl config set input.huawei.sampling_override '{ "198.51.100.21" = 2048 }'</code></td></tr>
+    <tr><td>Enviar NetFlow v9 en vez de IPFIX</td><td><code>nsconvctl config set output.flowlink.protocol netflow9</code></td></tr>
+    <tr><td>Una sola copia del tránsito</td><td><code>nsconvctl config set convert.direction ingress</code></td></tr>
+    <tr><td>Aceptar también switches IPv6</td><td><code>nsconvctl config set input.huawei.listen '[::]:9996'</code> y luego <code>systemctl restart nsconv</code></td></tr>
+  </table></div>
+  <p>Los contadores no se escalan; nsconv reenvía la tasa. Precedencia por switch: <code>sampling_override</code>, la tasa que informa el switch, luego <code>sampling_rate</code> (por defecto 1000).</p>
+
+  <h3 id="sec-configure-recargar-o-reiniciar">Recargar o reiniciar</h3>
+  <p><code>config set</code> recarga por sí solo. Tras editar el archivo a mano o con <code>nsconvctl config edit</code>, ejecute <code>nsconvctl reload</code>. La dirección de escucha o el búfer de una entrada, agregar o quitar entradas y la sección <code>[daemon]</code> requieren <code>systemctl restart nsconv</code> (la recarga responde <em>restart required</em>). <code>nsconvctl config check</code> valida un archivo sin aplicarlo.</p>
+
+  <h3 id="sec-configure-una-segunda-salida">Una segunda salida</h3>
+  <p>Las salidas se agregan en el archivo, p. ej. NetFlow v9 a otro colector (valores de ejemplo):</p>
+<pre><span class="label">/etc/nsconv/nsconv.toml</span>
+[[output]]
+name = "collector2"
+protocol = "netflow9"
+target = "192.0.2.20:2055"
+source_address = "local"
+</pre>
+  <div class="ref-list">
+    <div class="ref-title">Fuentes</div>
+    <ol>
+      <li><a href="https://github.com/roschereric/netstream-converter">nsconv 0.1.0-rc1 — configuración incluida y nsconvctl config --help — github.com/roschereric/netstream-converter</a></li>
+    </ol>
+  </div>
+</div>
+
+<div class="section" id="sec-flowlink">
+  <h2>Configurar FlowLink</h2>
+  <p>FlowLink lee <code>/etc/illumio-flowlink/config.yaml</code><sup class="ref">1</sup>. Agregue un consumidor para nsconv: un parser <code>ipfix</code> con un conector <code>udp</code> en el puerto de <code>output.flowlink.target</code>. <code>remote_addrs</code> es opcional, admite direcciones IP individuales (sin CIDR) como texto o lista, y limita el consumidor a esos orígenes<sup class="ref">2,3</sup>.</p>
+
+  <h3 id="sec-flowlink-mismo-equipo-source-address-exporter-por-defecto">Mismo equipo, source_address = "exporter" (por defecto)</h3>
+  <p>FlowLink ve a los switches como emisores, por lo que <code>remote_addrs</code> lista las IP de los switches (ejemplos):</p>
+<pre><span class="label">/etc/illumio-flowlink/config.yaml</span>
+consumers:
+  - name: nsconv-ipfix
+    parser:
+      type: ipfix
+    connectors:
+      - type: udp
+        properties:
+          ports: '4739'
+          remote_addrs: '198.51.100.21,198.51.100.22'
+</pre>
+  <h3 id="sec-flowlink-source-address-local">source_address = "local"</h3>
+  <p>FlowLink ve a nsconv como único emisor. En el mismo equipo: <code>remote_addrs: '127.0.0.1'</code>. Independiente: la IP del equipo de nsconv, por ejemplo <code>remote_addrs: '192.0.2.30'</code>.</p>
+  <h3 id="sec-flowlink-salida-netflow-v9-o-v5">Salida NetFlow v9 o v5</h3>
+  <p>Con <code>protocol = "netflow9"</code> o <code>"netflow5"</code> use un consumidor con <code>parser: type: netflow</code> en un puerto propio (por ejemplo 2055) y ajuste <code>output.flowlink.target</code> a ese puerto. Mantenga un protocolo por consumidor y puerto.</p>
+  <p>Aplique el cambio reiniciando FlowLink<sup class="ref">1</sup>:</p>
+<pre><span class="label">EQUIPO DE FLOWLINK (ROOT)</span>
+systemctl stop illumio-flowlink
+systemctl start illumio-flowlink
+</pre>
+  <div class="callout callout-info">
+    <div class="callout-label">Después de reiniciar FlowLink</div>
+    nsconv reenvía sus plantillas cada 20 segundos (<code>template_refresh_secs</code>). Un colector que arranca después de nsconv decodifica los flujos a partir del siguiente refresco de plantillas.
+  </div>
+
+  <h3 id="sec-flowlink-que-version-de-netstream-usar-en-el-switch">Qué versión de NetStream usar en el switch</h3>
+  <div class="tw"><table>
+    <tr><th>Tráfico del switch</th><th>Exportación del switch</th><th>Salida de nsconv</th></tr>
+    <tr><td>Solo IPv4</td><td>NetFlow v5 alcanza; v9 también funciona</td><td><code>ipfix</code> (por defecto)</td></tr>
+    <tr><td>IPv4 e IPv6</td><td>NetFlow v9 (o IPFIX), más las líneas <code>ipv6 netstream</code>; NetStream v5 no transporta IPv6</td><td><code>ipfix</code> o <code>netflow9</code>; nunca <code>netflow5</code></td></tr>
+  </table></div>
+  <p>Defina <code>input.huawei.sampling_rate</code> (o <code>sampling_override</code> por switch) con la tasa configurada en los switches; los switches v5 normalmente no la informan.</p>
+  <div class="ref-list">
+    <div class="ref-title">Fuentes</div>
+    <ol>
+      <li><a href="https://product-docs-repo.illumio.com/Tech-Docs/Core/26.1/Install-Upgrade-Admin/out/en/flowlink-2-0-0-configuration-and-usage/configure-flowlink/deploy-flowlink-as-a-linux-service.html">FlowLink 2.0 — Deploy FlowLink as a Linux service — product-docs-repo.illumio.com/Tech-Docs/Core/26.1/Install-Upgrade-Admin/out/en/flowlink-2-0-0-configuration-and-usage/configure-flowlink/deploy-flowlink-as-a-linux-service.html</a></li>
+      <li><a href="https://product-docs-repo.illumio.com/Tech-Docs/Core/26.1/Install-Upgrade-Admin/out/en/flowlink-2-0-0-configuration-and-usage/configure-flowlink/ingested-flow-types.html">FlowLink 2.0 — Ingested flow types — product-docs-repo.illumio.com/Tech-Docs/Core/26.1/Install-Upgrade-Admin/out/en/flowlink-2-0-0-configuration-and-usage/configure-flowlink/ingested-flow-types.html</a></li>
+      <li><a href="https://product-docs-repo.illumio.com/Tech-Docs/Core/26.1/Install-Upgrade-Admin/out/en/flowlink-2-0-0-configuration-and-usage/configure-flowlink/ingested-flow-examples.html">FlowLink 2.0 — Ingested flow examples — product-docs-repo.illumio.com/Tech-Docs/Core/26.1/Install-Upgrade-Admin/out/en/flowlink-2-0-0-configuration-and-usage/configure-flowlink/ingested-flow-examples.html</a></li>
+    </ol>
+  </div>
+</div>
+
+<div class="section" id="sec-huawei">
+  <h2>Configurar los switches Huawei</h2>
+  <div class="callout callout-warning">
+    <div class="callout-label">Comandos del equipo: verifique en su versión de VRP</div>
+    Las líneas siguientes se ejecutan en el equipo Huawei, no en el equipo Linux. La sintaxis cambia entre familias de producto y versiones de VRP; contraste cada línea con la referencia de comandos de su modelo y versión antes de aplicarla.
+  </div>
+  <p>Recomendaciones para todas las familias: enviar al equipo de nsconv (ejemplo <code>192.0.2.10</code>) por UDP 9996; refrescar las plantillas cada minuto (<code>template timeout-rate 1</code>); envejecer los flujos rápido (<code>timeout active 1</code>, <code>timeout inactive 15</code>), de lo contrario los flujos largos llegan a FlowLink hasta 30 minutos tarde; usar índices de interfaz de 32 bits (<code>index-switch 32</code>); muestrear solo la entrada, para que el tráfico de tránsito no se informe dos veces; mantener el reloj del equipo con NTP y la zona horaria correcta. El timeout activo por defecto es de 30 minutos y el refresco de plantillas por defecto también es de 30 minutos<sup class="ref">1</sup>. Valores de ejemplo: dirección del switch <code>198.51.100.21</code>, interfaces <code>GigabitEthernet0/0/1</code> y <code>10GE1/0/1</code>, nombre de registro <code>nsconv-rec</code>, slot 3.</p>
+
+  <h3 id="sec-huawei-serie-s-ar-estilo-v200-flujos-originales-netflow">Serie S / AR (estilo V200): flujos originales NetFlow v9</h3>
+<pre><span class="label">EQUIPO HUAWEI — VERIFIQUE EN SU VERSIÓN DE VRP</span>
+ip netstream export version 9
+ip netstream export source 198.51.100.21
+ip netstream export host 192.0.2.10 9996
+ip netstream export template timeout-rate 1
+ip netstream export template option sampler
+ip netstream export index-switch 32
+ip netstream timeout active 1
+ip netstream timeout inactive 15
+#
+interface GigabitEthernet0/0/1
+ ip netstream sampler fix-packets 1000 inbound
+ ip netstream inbound
+</pre>
+  <p>Para switches solo IPv4 también sirve <code>export version 5</code>. En los routers AR un muestreador sin definir equivale a 1:100. Donde IPv6 deba verse, agregue las líneas <code>ipv6 netstream</code> equivalentes (mismas palabras clave, como en el ejemplo de NetEngine) y mantenga la versión 9.</p>
+
+  <h3 id="sec-huawei-cloudengine-sintaxis-v200r019c10-registro-flexib">CloudEngine (sintaxis V200R019C10): registro flexible NetFlow v9</h3>
+<pre><span class="label">EQUIPO HUAWEI — VERIFIQUE EN SU VERSIÓN DE VRP</span>
+netstream export ip source 198.51.100.21
+netstream export ip host 192.0.2.10 9996
+netstream export ip version 9
+netstream export ip index-switch 32
+netstream export ip template timeout-rate 1
+netstream timeout ip active 1
+netstream timeout ip inactive 15
+#
+netstream record nsconv-rec ip
+ match ip source-address
+ match ip destination-address
+ match ip source-port
+ match ip destination-port
+ match ip protocol
+ match ip tos
+ collect counter bytes
+ collect counter packets
+ collect interface input
+ collect interface output
+#
+interface 10GE1/0/1
+ netstream record nsconv-rec ip
+ netstream inbound ip
+</pre>
+  <p>Asocie el registro a la interfaz antes de activar NetStream en ella. Algunas versiones escriben la línea de refresco como <code>netstream template ip timeout 1</code>.</p>
+
+  <h3 id="sec-huawei-ne40e-netengine-8000-vrp8-ipfix-distribuido-solo">NE40E / NetEngine 8000 (VRP8): IPFIX distribuido, solo entrada</h3>
+<div class="code-multipart">
+<pre><span class="label">EQUIPO HUAWEI — VERIFIQUE EN SU VERSIÓN DE VRP</span>
+slot 3
+ ip netstream sampler to slot self
+ ipv6 netstream sampler to slot self
+</pre>
+<pre>ip netstream timeout active 1
+ip netstream timeout inactive 15
+ip netstream export version ipfix
+ip netstream export index-switch 32
+ip netstream export template timeout-rate 1
+ip netstream export template option sampler
+ip netstream sampler fix-packets 1000 inbound
+ip netstream export source 198.51.100.21
+ip netstream export host 192.0.2.10 9996
+</pre>
+<pre>ipv6 netstream timeout active 1
+ipv6 netstream timeout inactive 15
+ipv6 netstream export version ipfix
+ipv6 netstream export index-switch 32
+ipv6 netstream export template timeout-rate 1
+ipv6 netstream sampler fix-packets 1000 inbound
+ipv6 netstream export source 198.51.100.21
+ipv6 netstream export host 192.0.2.10 9996
+</pre>
+<pre>interface GigabitEthernet0/3/0
+ ip netstream inbound
+ ipv6 netstream inbound
+</pre>
+</div>
+  <p>Para confirmar qué envía realmente un switch antes o después del cambio, use el <a href="#capture-kit">kit de captura</a> (últimos capítulos de este documento) o <code>nsconvctl debug-capture</code> (sección Operación).</p>
+  <div class="ref-list">
+    <div class="ref-title">Fuentes</div>
+    <ol>
+      <li><a href="https://info.support.huawei.com/info-finder/encyclopedia/en/NetStream.html">Huawei IP Encyclopedia — NetStream — info.support.huawei.com/info-finder/encyclopedia/en/NetStream.html</a></li>
+      <li><a href="https://support.huawei.com/enterprise/en/doc/EDOC1100138131/3a962da5/netstream-configuration-commands">Huawei CloudEngine 12800 V200R019C10 — NetStream configuration commands — support.huawei.com/enterprise/en/doc/EDOC1100138131/3a962da5/netstream-configuration-commands</a></li>
+    </ol>
+  </div>
+</div>
+
+<div class="section" id="sec-operate">
+  <h2>Operación</h2>
+  <h3 id="sec-operate-estado">Estado</h3>
+  <p><code>nsconvctl status</code> muestra la salud y sus motivos, las alertas abiertas, las entradas, los contadores (los contadores de descarte en cero se ocultan), una línea por sesión de exportador y una por salida. <code>--exporter 198.51.100.21</code> lo limita a un switch, <code>--detail</code> agrega las interfaces con más tráfico y las sesiones inactivas, <code>--json</code> imprime el estado completo en JSON. Cada comando termina con una línea legible por máquina <code>NSCONV-RESULT</code> y un código de salida (sección Referencia). Extracto de una prueba de laboratorio que reprodujo capturas Huawei grabadas en un solo equipo, sin ningún colector escuchando:</p>
+<pre><span class="label">nsconvctl status (extracto)</span>
+nsconv 0.1.0 · health degraded · up 3s · pid 59269
+  ! output flowlink: Connection refused (os error 61) (1s ago)
+
+alerts (5): silence one with `nsconvctl dismiss &lt;id&gt;`, all with `nsconvctl dismiss all`
+  sampling-default:127.0.0.1:65009:0
+      sampling rate not reported, using default 1000
+  ...
+counters
+  COUNTER             VALUE
+  datagrams_in        9
+  bytes_in            3132
+  flows_in            38
+  flows_out           19
+  datagrams_out       3
+  send_errors         1
+  restamped           38
+  sampling_defaulted  32
+  flows_lost_send     19
+  ...
+accounting: every datagram and flow is accounted for (0 flows waiting in open datagrams)
+
+outputs (1)
+  NAME      PROTOCOL  TARGET          SOURCE-ADDRESS  STREAMS  FLOWS  DATAGRAMS  ERRORS
+  flowlink  ipfix     127.0.0.1:4739  local           1        19     3          1
+  ! flowlink: last error Connection refused (os error 61) (1s ago)
+NSCONV-RESULT schema=1 version=0.1.0 command=status code=1 status=warning health=degraded ...
+</pre>
+  <p>La tabla de exportadores tiene una fila por sesión de exportador con las columnas EXPORTER (IP y puerto de origen del switch), SOURCE-ID, VER (<code>v5</code>, <code>v9</code>, <code>ipfix</code>), INPUT, SAMPLING (tasa y su origen: <code>override</code>, <code>reported</code> por el switch o <code>default</code>), SKEW (reloj del switch menos reloj del equipo), RESTAMPED, FLOWS, NO-TPL, LAST SEEN y SEQ LOSS (pérdida estimada a partir de los números de secuencia del switch).</p>
+
+  <h3 id="sec-operate-alertas">Alertas</h3>
+  <p>Las condiciones que conviene revisar generan una alerta con un id estable: <code>sampling-default</code>, <code>restamped</code>, <code>no-template</code>, <code>seq-gap</code> (los números de secuencia muestran pérdida), <code>many-sessions</code>, <code>flowless-sessions</code> y <code>collector-down</code> (nada escucha en un destino local de salida). Una vez revisada, silénciela; vuelve si su valor se duplica o después de 24 horas sin la condición. Silenciar nunca cambia la salud.</p>
+<pre><span class="label">ROOT O GRUPO NSCONV</span>
+nsconvctl dismiss sampling-default:198.51.100.21:40000:0
+nsconvctl dismiss all
+nsconvctl undismiss sampling-default:198.51.100.21:40000:0
+</pre>
+
+  <h3 id="sec-operate-logs">Logs</h3>
+  <p>nsconv escribe en el journal; journald se encarga de la rotación. En <code>info</code> no se registra nada por datagrama; las condiciones repetidas tienen límite de frecuencia y las persistentes (tasa de muestreo por defecto, desfase de reloj, datos sin plantilla) avisan una vez por exportador cada 6 horas.</p>
+<pre><span class="label">ROOT O GRUPO NSCONV</span>
+nsconvctl logs -f                # seguir (journalctl -u nsconv -f)
+nsconvctl logs --since 2h
+nsconvctl logs --recent 50       # últimas líneas en la memoria del servicio
+nsconvctl config set log.level debug   # una línea por tipo de evento, con límite (root)
+nsconvctl config set log.level info
+</pre>
+
+  <h3 id="sec-operate-capturar-un-switch-para-analisis">Capturar un switch para análisis</h3>
+  <p><code>nsconvctl debug-capture 198.51.100.21</code> ejecuta <code>tcpdump</code> (root) durante hasta 60 segundos o 2000 datagramas y guarda en un archivo pcap los datagramas NetStream originales del switch; <code>--dry-run</code> muestra el comando tcpdump. <code>nsconvctl decode &lt;archivo.pcap&gt;</code> muestra los flujos que nsconv lee de él, en cualquier equipo.</p>
+
+  <h3 id="sec-operate-actualizar">Actualizar</h3>
+  <p>RPM: <code>rpm -Uvh</code> con el paquete nuevo, por ejemplo <code>rpm -Uvh nsconv-0.1.1-1.x86_64.rpm</code>. La actualización conserva <code>/etc/nsconv/nsconv.toml</code> y las plantillas aprendidas, y reinicia el servicio si estaba en ejecución. Instalación del binario: ejecute <code>install --now</code> con el binario nuevo.</p>
+
+  <h3 id="sec-operate-desinstalar">Desinstalar</h3>
+  <p>RPM: <code>rpm -e nsconv</code> detiene y deshabilita el servicio y elimina los archivos; se conservan el usuario <code>nsconv</code>, <code>/var/lib/nsconv</code> y una configuración modificada (<code>nsconv.toml.rpmsave</code>). Instalación del binario: <code>nsconvctl uninstall</code>, o <code>nsconvctl uninstall --purge</code> para eliminar también <code>/etc/nsconv</code>, <code>/var/lib/nsconv</code> y el usuario y el grupo.</p>
+  <div class="ref-list">
+    <div class="ref-title">Fuentes</div>
+    <ol>
+      <li><a href="https://github.com/roschereric/netstream-converter">nsconv 0.1.0-rc1 — nsconvctl --help y salida de status — github.com/roschereric/netstream-converter</a></li>
+    </ol>
+  </div>
+</div>
+
+<div class="section" id="sec-tui">
+  <h2>Recorrido por la TUI</h2>
+  <p><code>nsconvctl tui</code> es una vista de terminal a pantalla completa del servicio en ejecución: el estado se actualiza cada segundo. Ejecútela como root (<code>sudo nsconvctl tui</code>) para editar la configuración en la pestaña Config; los miembros del grupo <code>nsconv</code> obtienen una vista de solo lectura. <code>--lang es</code> muestra las explicaciones en español (las etiquetas quedan en inglés), <code>--theme brand|terminal|light|mono</code> elige los colores y <code>nsconvctl tui --demo</code> funciona con datos de demostración y sin servicio, como en las pantallas siguientes (datos de demostración, direcciones de ejemplo).</p>
+  <div class="tui-shot">
+  <h3 id="sec-tui-1-overview">1 Overview</h3>
+  <p>El recorrido de recibido a enviado con sus tasas, cada contador de descarte distinto de cero con una explicación de una línea, las entradas y los motivos de salud con el siguiente paso.</p>
+  <!-- gen:tui-1 -->
+<div class="tui"><span style="color:#000000;background:#00cdcd;font-weight:700"> nsconv 0.1.0-rc1 · localhost · ▲ degraded · up 1h00m · in 4.5k flows/s · out 4.5k flows/s · DEMO          15:00:13 UTC </span>
+<span style="color:#1e1e1e;background:#00cdcd;font-weight:700"> 1 Overview </span><span style="color:#e6e6e6"> 2 Alerts  3 Exporters  4 Templates  5 Outputs  6 Config  7 Logs                                      </span><span style="color:#7f7f7f">EN/</span><span style="color:#00cdcd;font-weight:700">ES </span>
+<span style="color:#cd0000;font-weight:700">✗ 5 alerts · collector-down:flowlink: nothing listens on UDP 127.0.0.1:4739: the collector is down or uses anoth a open </span>
+<span style="color:#00cdcd;font-weight:700">┏ Pipeline ● ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓</span><span style="color:#e5e5e5">┌ Drops ───────────────────────────────────────────────────┐</span>
+<span style="color:#00cdcd;font-weight:700">┃received ▸    allowed ▸     decoded ▸     sent          </span><span style="color:#e6e6e6">  </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#cdcd00;font-weight:700">▲</span><span style="color:#e6e6e6"> denied                 14  </span><span style="color:#7f7f7f">el origen no está en la lista</span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">1.0k/s        1.0k/s        4.5k/s        4.5k/s          </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#7f7f7f">allow de la entrada</span><span style="color:#e6e6e6">                                       </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#7f7f7f">Σ 18.0k       Σ 18.0k       Σ 117k        Σ 117k        </span><span style="color:#e6e6e6">  </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#cdcd00;font-weight:700">▲</span><span style="color:#e6e6e6"> unsupported             1  </span><span style="color:#7f7f7f">no es NetFlow v5, v9 ni IPFIX</span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃██████▃██████</span><span style="color:#7f7f7f"> flows/s (60 s)</span><span style="color:#e6e6e6">                              </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#cdcd00;font-weight:700">▲</span><span style="color:#e6e6e6"> malformed               2  </span><span style="color:#7f7f7f">datagrama que no se puede</span><span style="color:#e6e6e6">    </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                          </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#7f7f7f">interpretar</span><span style="color:#e6e6e6">                                               </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                          </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#cdcd00;font-weight:700">▲</span><span style="color:#e6e6e6"> no_template            30  </span><span style="color:#7f7f7f">datos antes de su plantilla;</span><span style="color:#e6e6e6"> </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                          </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#7f7f7f">espere el refresco de plantillas del exportador</span><span style="color:#e6e6e6">           </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                          </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#cdcd00;font-weight:700">▲</span><span style="color:#e6e6e6"> no_tuple              400  </span><span style="color:#7f7f7f">flujo sin direcciones IP</span><span style="color:#e6e6e6">     </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                          </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#7f7f7f">(solo capa 2), inútil para Illumio</span><span style="color:#e6e6e6">                        </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                          </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#7f7f7f">·</span><span style="color:#e6e6e6"> filtered               40  </span><span style="color:#7f7f7f">descartado por</span><span style="color:#e6e6e6">               </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                          </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#7f7f7f">convert.direction</span><span style="color:#e6e6e6">                                         </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                          </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#cdcd00;font-weight:700">▲</span><span style="color:#e6e6e6"> v6_on_v5                3  </span><span style="color:#7f7f7f">un flujo IPv6 no se puede</span><span style="color:#e6e6e6">    </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                          </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#7f7f7f">enviar como NetFlow v5</span><span style="color:#e6e6e6">                                    </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛</span><span style="color:#e5e5e5">└──────────────────────────────────────────────────────────┘</span>
+<span style="color:#e5e5e5">┌ Inputs ──────────────────────────────────────────────────┐┌ Health ──────────────────────────────────────────────────┐</span>
+<span style="color:#e5e5e5">│</span><span style="color:#00cdcd;font-weight:700">huawei</span><span style="color:#e6e6e6"> 0.0.0.0:9996 allow 1 CIDR                          </span><span style="color:#e5e5e5">││</span><span style="color:#cdcd00;font-weight:700">▲ output flowlink: Connection refused (3s ago)</span><span style="color:#e6e6e6">            </span><span style="color:#e5e5e5">│</span>
+<span style="color:#e5e5e5">│</span><span style="color:#7f7f7f">  sampling default 1:1000, overrides 1</span><span style="color:#e6e6e6">                    </span><span style="color:#e5e5e5">││</span><span style="color:#cdcd00;font-weight:700">▲ input lab: empty allow-list, every datagram is denied</span><span style="color:#e6e6e6">   </span><span style="color:#e5e5e5">│</span>
+<span style="color:#e5e5e5">│</span><span style="color:#00cdcd;font-weight:700">lab</span><span style="color:#e6e6e6"> [::]:9997 </span><span style="color:#cdcd00;font-weight:700">▲ allow none: every datagram is denied</span><span style="color:#e6e6e6">      </span><span style="color:#e5e5e5">││</span><span style="color:#cdcd00;font-weight:700">▲ 1 exportador(es) con la tasa de muestreo por defecto</span><span style="color:#e6e6e6">    </span><span style="color:#e5e5e5">│</span>
+<span style="color:#e5e5e5">│</span><span style="color:#7f7f7f">  sampling default 1:1000, overrides 0</span><span style="color:#e6e6e6">                    </span><span style="color:#e5e5e5">││</span><span style="color:#cdcd00;font-weight:700">(def); defina input.&lt;name&gt;.sampling_override</span><span style="color:#e6e6e6">              </span><span style="color:#e5e5e5">│</span>
+<span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">││</span><span style="color:#7f7f7f">last reload: 2026-10-19T14:00:00Z applied</span><span style="color:#e6e6e6">                 </span><span style="color:#e5e5e5">│</span>
+<span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">││</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">││</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">││</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">││</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">││</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">││</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">││</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">││</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#e5e5e5">└──────────────────────────────────────────────────────────┘└──────────────────────────────────────────────────────────┘</span>
+<span style="color:#e6e6e6"> Overview › Pipeline                                          </span><span style="color:#7f7f7f">p pause  r reload   ←→ tabs · Tab panel · q quit · ? help </span></div>
+<!-- /gen:tui-1 -->
+  </div>
+  <div class="tui-shot">
+  <h3 id="sec-tui-2-alerts">2 Alerts</h3>
+  <p>Alertas abiertas y silenciadas con el consejo para cada una; <code>d</code> silencia la seleccionada.</p>
+  <!-- gen:tui-2 -->
+<div class="tui"><span style="color:#000000;background:#00cdcd;font-weight:700"> nsconv 0.1.0-rc1 · localhost · ▲ degraded · up 1h00m · in 4.5k flows/s · out 4.5k flows/s · DEMO          15:00:15 UTC </span>
+<span style="color:#e6e6e6"> 1 Overview </span><span style="color:#1e1e1e;background:#00cdcd;font-weight:700"> 2 Alerts </span><span style="color:#e6e6e6"> 3 Exporters  4 Templates  5 Outputs  6 Config  7 Logs                                      </span><span style="color:#7f7f7f">EN/</span><span style="color:#00cdcd;font-weight:700">ES </span>
+<span style="color:#cd0000;font-weight:700">✗ 5 alerts · collector-down:flowlink: nothing listens on UDP 127.0.0.1:4739: the collector is down or uses anoth a open </span>
+<span style="color:#00cdcd;font-weight:700">┏ Alerts (5 active, 2 dismissed) ● ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6;font-weight:700">      id                                   state            warning                                                   </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#1e1e1e;background:#e6e6e6">▶ </span><span style="color:#1e1e1e;background:#cd0000;font-weight:700">✗</span><span style="color:#1e1e1e;background:#e6e6e6">   collector-down:flowlink              </span><span style="color:#1e1e1e;background:#7f7f7f">active</span><span style="color:#1e1e1e;background:#e6e6e6">           nothing listens on UDP 127.0.0.1:4739: the collector is do</span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">  </span><span style="color:#cdcd00;font-weight:700">▲</span><span style="color:#e6e6e6">   seq-gap:10.20.0.1:40000:0            </span><span style="color:#7f7f7f">active</span><span style="color:#e6e6e6">           about 29 export packets (0.3% of the 8559 sent) never reac</span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">  </span><span style="color:#cdcd00;font-weight:700">▲</span><span style="color:#e6e6e6">   no-template:10.20.0.1:40000:0        </span><span style="color:#7f7f7f">active</span><span style="color:#e6e6e6">           30 data sets arrived without their template               </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">  </span><span style="color:#cdcd00;font-weight:700">▲</span><span style="color:#e6e6e6">   sampling-default:10.20.0.9:40000:0   </span><span style="color:#7f7f7f">active</span><span style="color:#e6e6e6">           sampling rate not reported, using default 1000            </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">  </span><span style="color:#7f7f7f">·</span><span style="color:#e6e6e6">   restamped:10.20.0.7:40000:0          </span><span style="color:#7f7f7f">active</span><span style="color:#e6e6e6">           clock skew above max, flow times restamped                </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">  </span><span style="color:#7f7f7f">·</span><span style="color:#e6e6e6">   </span><span style="color:#7f7f7f">flowless-sessions:10.20.0.30</span><span style="color:#e6e6e6">         </span><span style="color:#7f7f7f">dismissed 2h00m</span><span style="color:#e6e6e6">  </span><span style="color:#7f7f7f">4 sessions of 10.20.0.30 sent datagrams but never a flow (</span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">  </span><span style="color:#7f7f7f">·</span><span style="color:#e6e6e6">   </span><span style="color:#7f7f7f">many-sessions:10.20.0.31</span><span style="color:#e6e6e6">             </span><span style="color:#7f7f7f">dismissed, gone</span><span style="color:#e6e6e6">  </span><span style="color:#7f7f7f">34 exporter sessions (source ports / Source IDs) from 10.2</span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛</span>
+<span style="color:#e5e5e5">┌ Details ─────────────────────────────────────────────────────────────────────────────────────────────────────────────┐</span>
+<span style="color:#e5e5e5">│</span><span style="color:#00cdcd;font-weight:700">collector-down:flowlink</span><span style="color:#e6e6e6">                                                                                               </span><span style="color:#e5e5e5">│</span>
+<span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">nothing listens on UDP 127.0.0.1:4739: the collector is down or uses another port, the flows sent to output flowlink  </span><span style="color:#e5e5e5">│</span>
+<span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">are lost without an error                                                                                             </span><span style="color:#e5e5e5">│</span>
+<span style="color:#e5e5e5">│</span><span style="color:#00cdcd;font-weight:700">Qué hacer: </span><span style="color:#e6e6e6">Nada escucha en el puerto destino de la salida. Inicie el colector (FlowLink: systemctl status             </span><span style="color:#e5e5e5">│</span>
+<span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">illumio-flowlink) o corrija output.&lt;name&gt;.target en la pestaña Config. Los flujos enviados mientras tanto se pierden. </span><span style="color:#e5e5e5">│</span>
+<span style="color:#e5e5e5">│</span><span style="color:#7f7f7f">d dismiss: vuelve si se duplica o reaparece tras 24 h sin la condición; u lo muestra de nuevo ahora</span><span style="color:#e6e6e6">                   </span><span style="color:#e5e5e5">│</span>
+<span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#e5e5e5">│</span>
+<span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#e5e5e5">│</span>
+<span style="color:#e5e5e5">└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘</span>
+<span style="color:#e6e6e6"> Alerts                                </span><span style="color:#7f7f7f">d dismiss  D all  u show again  / filter   ←→ tabs · Tab panel · q quit · ? help </span></div>
+<!-- /gen:tui-2 -->
+  </div>
+  <div class="tui-shot">
+  <h3 id="sec-tui-3-exporters">3 Exporters</h3>
+  <p>Una fila por sesión de exportador (IP y puerto del switch, Source ID): versión, tasa y su origen (<code>def</code> marca la tasa por defecto), desfase de reloj, correcciones, datos sin plantilla, pérdida de secuencia. <code>Enter</code> muestra los detalles con una pista sobre el problema principal.</p>
+  <!-- gen:tui-3 -->
+<div class="tui"><span style="color:#000000;background:#00cdcd;font-weight:700"> nsconv 0.1.0-rc1 · localhost · ▲ degraded · up 1h00m · in 4.5k flows/s · out 4.5k flows/s · DEMO          15:00:16 UTC </span>
+<span style="color:#e6e6e6"> 1 Overview  2 Alerts </span><span style="color:#1e1e1e;background:#00cdcd;font-weight:700"> 3 Exporters </span><span style="color:#e6e6e6"> 4 Templates  5 Outputs  6 Config  7 Logs                                      </span><span style="color:#7f7f7f">EN/</span><span style="color:#00cdcd;font-weight:700">ES </span>
+<span style="color:#cd0000;font-weight:700">✗ 5 alerts · collector-down:flowlink: nothing listens on UDP 127.0.0.1:4739: the collector is down or uses anoth a open </span>
+<span style="color:#00cdcd;font-weight:700">┏ Exporters (3) · i shows 2 idle ● ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6;font-weight:700">  addr                   domain ver   flows/s  tpl  sampling      skew      no_tpl seen  seq loss                     </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#1e1e1e;background:#e6e6e6">▶ 10.20.0.1:40000        0      v9    4.0k     2    1:2048 rep    +120ms    </span><span style="color:#1e1e1e;background:#cdcd00;font-weight:700">30</span><span style="color:#1e1e1e;background:#e6e6e6">     1s    0.3 % (30 of 8890 packets)   </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">  10.20.0.7:40000        0      v5    2.0k     0    1:1 ovr       </span><span style="color:#cdcd00;font-weight:700">-3.0s ▲</span><span style="color:#e6e6e6">   0      2s    0.0 % (0 of 42600 flows)     </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">  10.20.0.9:40000        0      IPFIX 1.3k     1    </span><span style="color:#cdcd00;font-weight:700">1:1000 def ▲</span><span style="color:#e6e6e6">  +0ms      0      10s   </span><span style="color:#7f7f7f">not numbered</span><span style="color:#e6e6e6">                 </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛</span>
+<span style="color:#e6e6e6"> Exporters                                 </span><span style="color:#7f7f7f">⏎ details  i idle  / filter  p pause   ←→ tabs · Tab panel · q quit · ? help </span></div>
+<!-- /gen:tui-3 -->
+  </div>
+  <div class="tui-shot">
+  <h3 id="sec-tui-4-templates">4 Templates</h3>
+  <p>Las plantillas aprendidas de cada switch y la lista ordenada de campos de la seleccionada.</p>
+  <!-- gen:tui-4 -->
+<div class="tui"><span style="color:#000000;background:#00cdcd;font-weight:700"> nsconv 0.1.0-rc1 · localhost · ▲ degraded · up 1h00m · in 4.5k flows/s · out 4.5k flows/s · DEMO          15:00:18 UTC </span>
+<span style="color:#e6e6e6"> 1 Overview  2 Alerts  3 Exporters </span><span style="color:#1e1e1e;background:#00cdcd;font-weight:700"> 4 Templates </span><span style="color:#e6e6e6"> 5 Outputs  6 Config  7 Logs                                      </span><span style="color:#7f7f7f">EN/</span><span style="color:#00cdcd;font-weight:700">ES </span>
+<span style="color:#cd0000;font-weight:700">✗ 5 alerts · collector-down:flowlink: nothing listens on UDP 127.0.0.1:4739: the collector is down or uses anoth a open </span>
+<span style="color:#00cdcd;font-weight:700">┏ Templates (2) ● ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓</span><span style="color:#e5e5e5">┌ Fields ──────────────────────────────────────────────────┐</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6;font-weight:700">  exporter               domain id     kind     fields    </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">  1  sourceIPv4Address (8)  len 4                         </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#1e1e1e;background:#e6e6e6">▶ 10.20.0.1:40000        0      1315   data     3         </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">  2  destinationIPv4Address (12)  len 4                   </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">  10.20.0.1:40000        0      1316   options  1         </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#7f7f7f">  3  PEN 2011/232 (Huawei, skipped)  len 2</span><span style="color:#e6e6e6">                </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                          </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                          </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                          </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                          </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                          </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                          </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                          </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                          </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                          </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                          </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                          </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                          </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                          </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                          </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                          </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                          </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                          </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                          </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                          </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                          </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                          </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                          </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                          </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                          </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                          </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛</span><span style="color:#e5e5e5">└──────────────────────────────────────────────────────────┘</span>
+<span style="color:#e6e6e6"> Templates › Templates                               </span><span style="color:#7f7f7f">↑↓ rows  / filter  p pause   ←→ tabs · Tab panel · q quit · ? help </span></div>
+<!-- /gen:tui-4 -->
+  </div>
+  <div class="tui-shot">
+  <h3 id="sec-tui-5-outputs">5 Outputs</h3>
+  <p>Por salida: protocolo, destino, streams, flujos, datagramas, errores, el último error y si hay un colector local escuchando.</p>
+  <!-- gen:tui-5 -->
+<div class="tui"><span style="color:#000000;background:#00cdcd;font-weight:700"> nsconv 0.1.0-rc1 · localhost · ▲ degraded · up 1h00m · in 4.5k flows/s · out 4.5k flows/s · DEMO          15:00:19 UTC </span>
+<span style="color:#e6e6e6"> 1 Overview  2 Alerts  3 Exporters  4 Templates </span><span style="color:#1e1e1e;background:#00cdcd;font-weight:700"> 5 Outputs </span><span style="color:#e6e6e6"> 6 Config  7 Logs                                      </span><span style="color:#7f7f7f">EN/</span><span style="color:#00cdcd;font-weight:700">ES </span>
+<span style="color:#cd0000;font-weight:700">✗ 5 alerts · collector-down:flowlink: nothing listens on UDP 127.0.0.1:4739: the collector is down or uses anoth a open </span>
+<span style="color:#00cdcd;font-weight:700">┏ Outputs (2) ● ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6;font-weight:700">  name         proto    target                source   streams flows/s  datagrams bytes   errors collector            </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#1e1e1e;background:#e6e6e6">▶ flowlink     ipfix    127.0.0.1:4739        exporter 3       4.5k     20.3k     26.7MB  </span><span style="color:#1e1e1e;background:#cdcd00;font-weight:700">5</span><span style="color:#1e1e1e;background:#e6e6e6">      </span><span style="color:#1e1e1e;background:#cd0000;font-weight:700">✗ down 1m54s</span><span style="color:#1e1e1e;background:#e6e6e6">         </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">  backup       netflow9 192.0.2.10:2055       local    1       0        0         0B      0      </span><span style="color:#7f7f7f">· unknown</span><span style="color:#e6e6e6">            </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛</span>
+<span style="color:#e6e6e6"> Outputs                                 </span><span style="color:#7f7f7f">⏎ details  / filter  p pause  r reload   ←→ tabs · Tab panel · q quit · ? help </span></div>
+<!-- /gen:tui-5 -->
+  </div>
+  <div class="tui-shot">
+  <h3 id="sec-tui-6-config">6 Config</h3>
+  <p>Cada clave con su valor. <code>Enter</code> edita el valor, <code>Enter</code> otra vez valida, escribe el archivo (conservando los comentarios) y recarga; <code>Esc</code> cancela.</p>
+  <!-- gen:tui-6 -->
+<div class="tui"><span style="color:#000000;background:#00cdcd;font-weight:700"> nsconv 0.1.0-rc1 · localhost · ▲ degraded · up 1h00m · in 1.6k flows/s · out 1.6k flows/s · DEMO          15:00:21 UTC </span>
+<span style="color:#e6e6e6"> 1 Overview  2 Alerts  3 Exporters  4 Templates  5 Outputs </span><span style="color:#1e1e1e;background:#00cdcd;font-weight:700"> 6 Config </span><span style="color:#e6e6e6"> 7 Logs                                      </span><span style="color:#7f7f7f">EN/</span><span style="color:#00cdcd;font-weight:700">ES </span>
+<span style="color:#cd0000;font-weight:700">✗ 5 alerts · collector-down:flowlink: nothing listens on UDP 127.0.0.1:4739: the collector is down or uses anoth a open </span>
+<span style="color:#00cdcd;font-weight:700">┏ Keys (24) ● ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓</span><span style="color:#e5e5e5">┌ Value ───────────────────────────────────────────────────┐</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6;font-weight:700">  key                                value                </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#7f7f7f">file: (demo)</span><span style="color:#e6e6e6">                                              </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#1e1e1e;background:#e6e6e6">▶ convert.direction                  &quot;all&quot;                </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#00cdcd;font-weight:700">convert.direction</span><span style="color:#e6e6e6">                                         </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">  convert.exporter_idle_secs         3600                 </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">value: &quot;all&quot;                                              </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">  convert.max_clock_skew_secs        300                  </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#7f7f7f">· Demo: las ediciones se validan pero no se escriben en</span><span style="color:#e6e6e6">   </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">  convert.max_exporters              1024                 </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#7f7f7f">ningún sitio.</span><span style="color:#e6e6e6">                                             </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">  convert.max_fields_per_template    128                  </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#7f7f7f">Enter edita el valor (TOML), Enter otra vez guarda y</span><span style="color:#e6e6e6">      </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">  convert.max_templates_per_exporter 32                   </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#7f7f7f">recarga, Esc cancela.</span><span style="color:#e6e6e6">                                     </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">  daemon.control_socket              &quot;/run/nsconv/ctl.sock</span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">  daemon.state_dir                   &quot;/var/lib/nsconv&quot;    </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">  input.huawei.allow                 []                   </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">  input.huawei.listen                &quot;0.0.0.0:9996&quot;       </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">  input.huawei.name                  &quot;huawei&quot;             </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">  input.huawei.recv_buffer_bytes     4194304              </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">  input.huawei.sampling_override     {}                   </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">  input.huawei.sampling_rate         1000                 </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">  log.level                          &quot;info&quot;               </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">  output.flowlink.flush_ms           500                  </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">  output.flowlink.max_datagram       1400                 </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">  output.flowlink.name               &quot;flowlink&quot;           </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">  output.flowlink.observation_domain 1                    </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">  output.flowlink.protocol           &quot;ipfix&quot;              </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">  output.flowlink.source_address     &quot;exporter&quot;           </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">  output.flowlink.target             &quot;127.0.0.1:4739&quot;     </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">  output.flowlink.template_refresh_s 20                   </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">  version                            1                    </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                          </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                          </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                          </span><span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e5e5e5">│</span><span style="color:#e6e6e6">                                                          </span><span style="color:#e5e5e5">│</span>
+<span style="color:#00cdcd;font-weight:700">┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛</span><span style="color:#e5e5e5">└──────────────────────────────────────────────────────────┘</span>
+<span style="color:#e6e6e6"> Config › Keys                                       </span><span style="color:#7f7f7f">⏎ edit  / filter  r reload   ←→ tabs · Tab panel · q quit · ? help </span></div>
+<!-- /gen:tui-6 -->
+  </div>
+  <div class="tui-shot">
+  <h3 id="sec-tui-7-logs">7 Logs</h3>
+  <p>Las líneas de log recientes del servicio; <code>/</code> filtra por texto, <code>l</code> define el nivel mínimo.</p>
+  <!-- gen:tui-7 -->
+<div class="tui"><span style="color:#000000;background:#00cdcd;font-weight:700"> nsconv 0.1.0-rc1 · localhost · ▲ degraded · up 1h00m · in 4.5k flows/s · out 4.5k flows/s · DEMO          15:00:22 UTC </span>
+<span style="color:#e6e6e6"> 1 Overview  2 Alerts  3 Exporters  4 Templates  5 Outputs  6 Config </span><span style="color:#1e1e1e;background:#00cdcd;font-weight:700"> 7 Logs </span><span style="color:#e6e6e6">                                     </span><span style="color:#7f7f7f">EN/</span><span style="color:#00cdcd;font-weight:700">ES </span>
+<span style="color:#cd0000;font-weight:700">✗ 5 alerts · collector-down:flowlink: nothing listens on UDP 127.0.0.1:4739: the collector is down or uses anoth a open </span>
+<span style="color:#00cdcd;font-weight:700">┏ Logs (22)  level ≤ debug ● ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6"> 15:00:01 </span><span style="color:#cdcd00;font-weight:700">▲ WARN  exporter 10.20.0.9:40000: sampling rate not reported, using default 1000</span><span style="color:#e6e6e6">                            </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6"> 15:00:02 </span><span style="color:#7f7f7f">·</span><span style="color:#e6e6e6"> INFO  output flowlink: 3 streams open (source_address = exporter)                                         </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6"> 15:00:03 </span><span style="color:#cdcd00;font-weight:700">▲ WARN  exporter 10.20.0.7:40000: clock skew -3.0s, restamping flow times</span><span style="color:#e6e6e6">                                   </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6"> 15:00:04 </span><span style="color:#cd0000;font-weight:700">✗ ERROR output flowlink: send failed: Connection refused (os error 111)</span><span style="color:#e6e6e6">                                     </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6"> 15:00:05 </span><span style="color:#7f7f7f">· DEBUG datagram from 10.20.0.1:40000: 30 flows, v9</span><span style="color:#e6e6e6">                                                         </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6"> 15:00:06 </span><span style="color:#7f7f7f">·</span><span style="color:#e6e6e6"> INFO  input huawei: template 1315 learned from 10.20.0.1:40000                                            </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6"> 15:00:07 </span><span style="color:#cdcd00;font-weight:700">▲ WARN  exporter 10.20.0.9:40000: sampling rate not reported, using default 1000</span><span style="color:#e6e6e6">                            </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6"> 15:00:08 </span><span style="color:#7f7f7f">·</span><span style="color:#e6e6e6"> INFO  output flowlink: 3 streams open (source_address = exporter)                                         </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6"> 15:00:09 </span><span style="color:#cdcd00;font-weight:700">▲ WARN  exporter 10.20.0.7:40000: clock skew -3.0s, restamping flow times</span><span style="color:#e6e6e6">                                   </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6"> 15:00:10 </span><span style="color:#cd0000;font-weight:700">✗ ERROR output flowlink: send failed: Connection refused (os error 111)</span><span style="color:#e6e6e6">                                     </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6"> 15:00:11 </span><span style="color:#7f7f7f">· DEBUG datagram from 10.20.0.1:40000: 30 flows, v9</span><span style="color:#e6e6e6">                                                         </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6"> 15:00:12 </span><span style="color:#7f7f7f">·</span><span style="color:#e6e6e6"> INFO  input huawei: template 1315 learned from 10.20.0.1:40000                                            </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6"> 15:00:13 </span><span style="color:#cdcd00;font-weight:700">▲ WARN  exporter 10.20.0.9:40000: sampling rate not reported, using default 1000</span><span style="color:#e6e6e6">                            </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6"> 15:00:14 </span><span style="color:#7f7f7f">·</span><span style="color:#e6e6e6"> INFO  output flowlink: 3 streams open (source_address = exporter)                                         </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6"> 15:00:15 </span><span style="color:#cdcd00;font-weight:700">▲ WARN  exporter 10.20.0.7:40000: clock skew -3.0s, restamping flow times</span><span style="color:#e6e6e6">                                   </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6"> 15:00:16 </span><span style="color:#cd0000;font-weight:700">✗ ERROR output flowlink: send failed: Connection refused (os error 111)</span><span style="color:#e6e6e6">                                     </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6"> 15:00:17 </span><span style="color:#7f7f7f">· DEBUG datagram from 10.20.0.1:40000: 30 flows, v9</span><span style="color:#e6e6e6">                                                         </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6"> 15:00:18 </span><span style="color:#7f7f7f">·</span><span style="color:#e6e6e6"> INFO  input huawei: template 1315 learned from 10.20.0.1:40000                                            </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6"> 15:00:19 </span><span style="color:#cdcd00;font-weight:700">▲ WARN  exporter 10.20.0.9:40000: sampling rate not reported, using default 1000</span><span style="color:#e6e6e6">                            </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6"> 15:00:20 </span><span style="color:#7f7f7f">·</span><span style="color:#e6e6e6"> INFO  output flowlink: 3 streams open (source_address = exporter)                                         </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6"> 15:00:21 </span><span style="color:#cdcd00;font-weight:700">▲ WARN  exporter 10.20.0.7:40000: clock skew -3.0s, restamping flow times</span><span style="color:#e6e6e6">                                   </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6"> 15:00:22 </span><span style="color:#cd0000;font-weight:700">✗ ERROR output flowlink: send failed: Connection refused (os error 111)</span><span style="color:#e6e6e6">                                     </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┃</span><span style="color:#e6e6e6">                                                                                                                      </span><span style="color:#00cdcd;font-weight:700">┃</span>
+<span style="color:#00cdcd;font-weight:700">┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛</span>
+<span style="color:#e6e6e6"> Logs                                               </span><span style="color:#7f7f7f">/ filter  l level  p follow   ←→ tabs · Tab panel · q quit · ? help </span></div>
+<!-- /gen:tui-7 -->
+  </div>
+  <h3 id="sec-tui-teclas">Teclas</h3>
+  <div class="tw"><table>
+    <tr><th>Teclas</th><th>Acción</th></tr>
+    <tr><td><code>1</code>–<code>7</code>, <code>←</code> <code>→</code></td><td>Cambiar de pestaña</td></tr>
+    <tr><td><code>Tab</code>, <code>↑</code> <code>↓</code>, <code>PgUp</code> <code>PgDn</code></td><td>Moverse entre paneles y filas</td></tr>
+    <tr><td><code>Enter</code> / <code>Esc</code></td><td>Detalles o editar / cerrar</td></tr>
+    <tr><td><code>a</code>, <code>d</code>, <code>D</code>, <code>u</code></td><td>Abrir Alerts, silenciar la alerta seleccionada, silenciar todas, mostrar de nuevo</td></tr>
+    <tr><td><code>p</code>, <code>r</code>, <code>/</code></td><td>Pausar, recargar la configuración, filtrar filas</td></tr>
+    <tr><td><code>T</code>, <code>L</code></td><td>Siguiente tema, cambiar de idioma</td></tr>
+    <tr><td><code>?</code>, <code>q</code></td><td>Ayuda, salir</td></tr>
+  </table></div>
+  <div class="ref-list">
+    <div class="ref-title">Fuentes</div>
+    <ol>
+      <li><a href="https://github.com/roschereric/netstream-converter">nsconv 0.1.0-rc1 — nsconvctl tui --demo — github.com/roschereric/netstream-converter</a></li>
+    </ol>
+  </div>
+</div>
+
+<div class="section" id="sec-troubleshooting">
+  <h2>Solución de problemas por síntoma</h2>
+  <p>Empiece con <code>nsconvctl status</code>: los motivos de salud, las alertas y los contadores de descarte distintos de cero suelen indicar la causa y el siguiente paso.</p>
+
+  <h3 id="sec-troubleshooting-no-llega-nada-datagrams-in-sigue-en-0">No llega nada (datagrams_in sigue en 0)</h3>
+  <ul>
+    <li><strong>Lista allow.</strong> Un contador <code>denied</code> creciente indica que el switch no está en <code>input.huawei.allow</code>; el journal muestra el origen rechazado.</li>
+    <li><strong>Firewall.</strong> <code>firewall-cmd --zone=nsconv-exporters --list-all</code> debe mostrar la red de los switches como origen y <code>9996/udp</code> como puerto.</li>
+    <li><strong>Puerto.</strong> La línea export host del switch debe indicar el puerto de <code>input.huawei.listen</code>. <code>ss -ulnp | grep 9996</code> muestra que nsconv escucha.</li>
+    <li><strong>Filtro de ruta inversa.</strong> Con <code>rp_filter = 1</code> (estricto) el kernel descarta los paquetes que llegan por una interfaz que no es su ruta de vuelta al origen<sup class="ref">1</sup>. Revise <code>sysctl net.ipv4.conf.all.rp_filter net.ipv4.conf.&lt;interfaz&gt;.rp_filter</code> (se aplica el valor mayor). Con enrutamiento asimétrico, agregue una ruta a los switches por la interfaz receptora o use el modo flexible (2) en ella.</li>
+    <li><strong>¿Llega algo por el cable?</strong> <code>nsconvctl debug-capture 198.51.100.21</code> captura lo que llega al equipo desde ese switch.</li>
+  </ul>
+
+  <h3 id="sec-troubleshooting-datos-sin-plantilla-no-template-alerta-no-templa">Datos sin plantilla (no_template, alerta no-template)</h3>
+  <p>El switch envió datos antes de que nsconv tuviera su plantilla. Huawei refresca las plantillas cada 30 minutos por defecto; configure <code>template timeout-rate 1</code> en el switch. Las plantillas aprendidas sobreviven a los reinicios de nsconv.</p>
+
+  <h3 id="sec-troubleshooting-tasa-de-muestreo-desconocida-alerta-sampling-def">Tasa de muestreo desconocida (alerta sampling-default)</h3>
+  <p>El switch no informa su tasa, así que se usa <code>input.huawei.sampling_rate</code> (por defecto 1000). Si el switch muestrea con otra tasa, defínala: <code>nsconvctl config set input.huawei.sampling_override '{ "198.51.100.21" = 2048 }'</code>. Use 1 para un switch sin muestreo.</p>
+
+  <h3 id="sec-troubleshooting-desfase-de-reloj-restamped-alerta-restamped">Desfase de reloj (restamped, alerta restamped)</h3>
+  <p>El reloj del switch difiere del equipo en más de <code>convert.max_clock_skew_secs</code> (300 s). Mientras tanto nsconv corrige los tiempos de los flujos. Corrija NTP y la zona horaria del switch; la columna SKEW muestra la diferencia medida.</p>
+
+  <h3 id="sec-troubleshooting-flowlink-no-muestra-nada">FlowLink no muestra nada</h3>
+  <ul>
+    <li><strong>remote_addrs.</strong> Con <code>source_address = "exporter"</code> debe listar las IP de los switches; con <code>local</code>, la dirección de nsconv (o 127.0.0.1 en el mismo equipo). FlowLink descarta los flujos de otros orígenes.</li>
+    <li><strong>Parser y puerto.</strong> La salida IPFIX necesita un consumidor <code>ipfix</code>, NetFlow v9/v5 un consumidor <code>netflow</code>, en el puerto de <code>output.&lt;name&gt;.target</code>.</li>
+    <li><strong>Colector caído.</strong> La alerta <code>collector-down</code> y la columna COLLECTOR de la salida indican que nada escucha en el puerto de destino en este equipo: inicie FlowLink o corrija el puerto.</li>
+    <li><strong>Recién reiniciado.</strong> Tras reiniciar FlowLink espere hasta 20 segundos al siguiente refresco de plantillas.</li>
+    <li><strong>Salida fallida: cannot open transparent sockets.</strong> Al servicio le falta <code>CAP_NET_RAW</code>, que la unidad incluida otorga. Restaure la unidad o configure <code>source_address = "local"</code>.</li>
+    <li><strong>Independiente a través de routers con exporter.</strong> Los routers descartan paquetes con las direcciones de los switches como origen; use <code>local</code>.</li>
+  </ul>
+
+  <h3 id="sec-troubleshooting-v5-e-ipv6">v5 e IPv6</h3>
+  <p>NetFlow v5 no admite IPv6. Los switches con tráfico IPv6 deben exportar v9 (o IPFIX) con las líneas <code>ipv6 netstream</code>, y una salida de nsconv con <code>protocol = "netflow5"</code> descarta los flujos IPv6 (contador <code>v6_on_v5</code>). Use <code>ipfix</code> o <code>netflow9</code>.</p>
+
+  <h3 id="sec-troubleshooting-descartes-del-kernel-en-picos-de-trafico">Descartes del kernel en picos de tráfico</h3>
+  <p>Un <code>kernel_drops</code> creciente en una entrada (o <code>RcvbufErrors</code> en <code>grep ^Udp: /proc/net/snmp</code>) indica que se llenó el búfer del socket. Compruebe que <code>sysctl net.core.rmem_max</code> sea al menos 8388608 y aumente <code>input.huawei.recv_buffer_bytes</code> si hace falta (reinicio).</p>
+
+  <h3 id="sec-troubleshooting-el-servicio-no-arranca-estado-203-exec">El servicio no arranca: estado 203/EXEC</h3>
+  <p>Etiqueta SELinux de un binario copiado a mano: <code>restorecon -v /usr/local/bin/nsconvctl</code>. Para otros errores de arranque, <code>journalctl -u nsconv</code> muestra el motivo; <code>nsconvctl config check</code> valida el archivo.</p>
+  <div class="ref-list">
+    <div class="ref-title">Fuentes</div>
+    <ol>
+      <li><a href="https://docs.kernel.org/networking/ip-sysctl.html">Linux kernel — IP sysctl (rp_filter) — docs.kernel.org/networking/ip-sysctl.html</a></li>
+      <li><a href="https://product-docs-repo.illumio.com/Tech-Docs/Core/26.1/Install-Upgrade-Admin/out/en/flowlink-2-0-0-configuration-and-usage/flowlink-usage/troubleshooting.html">FlowLink 2.0 — Troubleshooting — product-docs-repo.illumio.com/Tech-Docs/Core/26.1/Install-Upgrade-Admin/out/en/flowlink-2-0-0-configuration-and-usage/flowlink-usage/troubleshooting.html</a></li>
+    </ol>
+  </div>
+</div>
+
+<div class="section" id="sec-reference">
+  <h2>Referencia</h2>
+  <p>Las tablas siguientes se generan a partir del código de nsconv y de la configuración incluida en esta versión.</p>
+  <h3 id="sec-reference-comandos">Comandos</h3>
+  <p>Opciones globales: <code>--config PATH</code> (por defecto <code>/etc/nsconv/nsconv.toml</code>), <code>--json</code>, <code>--no-color</code>, <code>-h</code>/<code>--help</code>, <code>-V</code>/<code>--version</code>. <code>nsconvctl &lt;comando&gt; --help</code> lista las opciones de cada comando.</p>
+  <!-- gen:commands -->
+<div class="tw"><table class="ref">
+<thead><tr><th>Comando</th><th>Qué hace</th></tr></thead>
+<tbody>
+<tr><td><code>nsconvctl run</code></td><td>Ejecuta el conversor en primer plano (ExecStart de systemd)</td></tr>
+<tr><td><code>nsconvctl status</code></td><td>Salud, contadores, exportadores y salidas del daemon en ejecución</td></tr>
+<tr><td><code>nsconvctl dismiss</code></td><td>Silencia un aviso de <code>status</code> (su id, o <code>all</code>); vuelve si se duplica o tras 24 h sin él</td></tr>
+<tr><td><code>nsconvctl undismiss</code></td><td>Vuelve a mostrar un aviso silenciado</td></tr>
+<tr><td><code>nsconvctl debug-capture</code></td><td>Guarda en un pcap los datagramas NetStream de un switch (usa tcpdump, requiere root)</td></tr>
+<tr><td><code>nsconvctl reload</code></td><td>Valida el archivo de configuración y pide al daemon que lo recargue</td></tr>
+<tr><td><code>nsconvctl config</code></td><td>Muestra, valida o edita el archivo de configuración (show, check, path, set, edit)</td></tr>
+<tr><td><code>nsconvctl logs</code></td><td>Líneas de log del daemon: journalctl -u nsconv, o --recent desde la memoria del daemon</td></tr>
+<tr><td><code>nsconvctl tui</code></td><td>Interfaz de terminal a pantalla completa</td></tr>
+<tr><td><code>nsconvctl decode</code></td><td>Decodifica una captura (o datagramas en vivo) y muestra los flujos normalizados</td></tr>
+<tr><td><code>nsconvctl replay</code></td><td>Envía los datagramas NetFlow/IPFIX de una captura a un colector (nunca falsifica el origen)</td></tr>
+<tr><td><code>nsconvctl install</code></td><td>Instala el binario, la unidad, el usuario y la configuración por defecto (root; la vía normal es el RPM)</td></tr>
+<tr><td><code>nsconvctl uninstall</code></td><td>Elimina lo que agregó <code>install</code></td></tr>
+<tr><td><code>nsconvctl version</code></td><td>Muestra la versión</td></tr>
+</tbody>
+</table></div>
+<!-- /gen:commands -->
+  <h3 id="sec-reference-claves-de-configuracion">Claves de configuración</h3>
+  <p><code>&lt;name&gt;</code> es el nombre de la entrada o salida (<code>huawei</code>, <code>flowlink</code> en el archivo incluido). Los valores por defecto son los del archivo incluido.</p>
+  <!-- gen:config -->
+<div class="tw"><table class="ref">
+<thead><tr><th>Clave</th><th>Por defecto</th><th>Significado</th></tr></thead>
+<tbody>
+<tr><td><code>version</code></td><td><code>1</code></td><td>Versión del esquema del archivo. Solo se acepta 1.</td></tr>
+<tr><td><code>log.level</code></td><td><code>&quot;info&quot;</code></td><td>error | warn | info | debug. Se aplica al recargar.</td></tr>
+<tr><td><code>daemon.control_socket</code></td><td><code>&quot;/run/nsconv/ctl.sock&quot;</code></td><td>Socket de control local que usan nsconvctl y la TUI. Requiere reinicio.</td></tr>
+<tr><td><code>daemon.state_dir</code></td><td><code>&quot;/var/lib/nsconv&quot;</code></td><td>Aquí se guardan las plantillas aprendidas, las alertas descartadas y el historial de sesiones. Requiere reinicio.</td></tr>
+<tr><td><code>convert.direction</code></td><td><code>&quot;all&quot;</code></td><td>all | ingress | egress. Con NetStream de entrada y salida en todos los puertos, el tráfico de tránsito se informa dos veces; ingress conserva una copia.</td></tr>
+<tr><td><code>convert.max_clock_skew_secs</code></td><td><code>300</code></td><td>Si el reloj del exportador difiere de este equipo en más que este valor, los tiempos de los flujos se corrigen a la hora de recepción. 0 lo desactiva.</td></tr>
+<tr><td><code>convert.max_exporters</code></td><td><code>1024</code></td><td>Máximo de sesiones de exportador (IP, puerto y Source ID del switch). Las nuevas por encima se rechazan y se cuentan.</td></tr>
+<tr><td><code>convert.max_templates_per_exporter</code></td><td><code>32</code></td><td>Máximo de plantillas por sesión de exportador.</td></tr>
+<tr><td><code>convert.max_fields_per_template</code></td><td><code>128</code></td><td>Máximo de campos por plantilla (16 a 1024).</td></tr>
+<tr><td><code>convert.exporter_idle_secs</code></td><td><code>3600</code></td><td>Una sesión de exportador sin tráfico durante este tiempo se elimina; sus totales quedan en el historial.</td></tr>
+<tr><td><code>input.&lt;name&gt;.name</code></td><td><code>&quot;huawei&quot;</code></td><td>Nombre de la entrada (letras, dígitos, _ y -).</td></tr>
+<tr><td><code>input.&lt;name&gt;.listen</code></td><td><code>&quot;0.0.0.0:9996&quot;</code></td><td>Dirección y puerto UDP al que envían los switches. Nunca un puerto de FlowLink. Use [::]:9996 para aceptar también IPv6. Requiere reinicio.</td></tr>
+<tr><td><code>input.&lt;name&gt;.allow</code></td><td><code>[]</code></td><td>IP o CIDR de los switches autorizados a enviar. Vacía = se descarta todo.</td></tr>
+<tr><td><code>input.&lt;name&gt;.sampling_rate</code></td><td><code>1000</code></td><td>Tasa 1 de N que se usa cuando un switch no la informa (marca el exportador y avisa cada 6 h).</td></tr>
+<tr><td><code>input.&lt;name&gt;.sampling_override</code></td><td><code>{}</code></td><td>Tasa por switch que prevalece sobre lo que el switch informa, p. ej. { &quot;198.51.100.21&quot; = 2048 }.</td></tr>
+<tr><td><code>input.&lt;name&gt;.recv_buffer_bytes</code></td><td><code>4194304</code></td><td>Búfer de recepción del socket que se pide al kernel (limitado por net.core.rmem_max). Requiere reinicio.</td></tr>
+<tr><td><code>output.&lt;name&gt;.name</code></td><td><code>&quot;flowlink&quot;</code></td><td>Nombre de la salida (letras, dígitos, _ y -).</td></tr>
+<tr><td><code>output.&lt;name&gt;.protocol</code></td><td><code>&quot;ipfix&quot;</code></td><td>ipfix (recomendado) | netflow9 | netflow5 (solo IPv4).</td></tr>
+<tr><td><code>output.&lt;name&gt;.target</code></td><td><code>&quot;127.0.0.1:4739&quot;</code></td><td>Dirección y puerto UDP del colector, p. ej. el consumidor de FlowLink.</td></tr>
+<tr><td><code>output.&lt;name&gt;.source_address</code></td><td><code>&quot;exporter&quot;</code></td><td>exporter = enviar desde la IP y el puerto de cada switch (remote_addrs de FlowLink = IP de los switches); local = enviar desde este equipo.</td></tr>
+<tr><td><code>output.&lt;name&gt;.observation_domain</code></td><td><code>1</code></td><td>Observation Domain / Source ID, solo con source_address = local.</td></tr>
+<tr><td><code>output.&lt;name&gt;.template_refresh_secs</code></td><td><code>20</code></td><td>Cada cuánto se reenvían las plantillas (1 a 3600), para que un colector reiniciado se recupere rápido.</td></tr>
+<tr><td><code>output.&lt;name&gt;.max_datagram</code></td><td><code>1400</code></td><td>Datagrama más grande que se envía, en bytes (512 a 9000).</td></tr>
+<tr><td><code>output.&lt;name&gt;.flush_ms</code></td><td><code>500</code></td><td>Un datagrama a medio llenar se envía tras estos milisegundos (10 a 10000).</td></tr>
+</tbody>
+</table></div>
+<!-- /gen:config -->
+  <h3 id="sec-reference-contadores">Contadores</h3>
+  <p>Los contadores globales de <code>nsconvctl status</code> (y <code>status --json</code>, objeto <code>counters</code>) cuentan desde que arrancó el servicio; los totales por exportador continúan entre reinicios.</p>
+  <!-- gen:counters -->
+<div class="tw"><table class="ref">
+<thead><tr><th>Contador</th><th>Significado</th><th>Qué hacer</th></tr></thead>
+<tbody>
+<tr><td><code>datagrams_in</code></td><td>Datagramas recibidos en todas las entradas.</td><td></td></tr>
+<tr><td><code>bytes_in</code></td><td>Bytes recibidos en todas las entradas.</td><td></td></tr>
+<tr><td><code>flows_in</code></td><td>Flujos decodificados de los switches.</td><td></td></tr>
+<tr><td><code>flows_out</code></td><td>Flujos en datagramas enviados con éxito a los colectores.</td><td></td></tr>
+<tr><td><code>datagrams_out</code></td><td>Datagramas enviados a los colectores.</td><td></td></tr>
+<tr><td><code>denied</code></td><td>Datagramas de un origen que no está en la lista allow.</td><td>Agregue el switch a input.&lt;name&gt;.allow.</td></tr>
+<tr><td><code>unsupported</code></td><td>Datagramas que no son NetFlow v5, v9 ni IPFIX (p. ej. sFlow o agregación NetFlow v8).</td><td>Exporte v5, v9 o IPFIX en el switch.</td></tr>
+<tr><td><code>malformed</code></td><td>Datagramas, conjuntos o plantillas que no se pueden interpretar.</td><td>Revise la MTU del camino; capture con debug-capture.</td></tr>
+<tr><td><code>no_template</code></td><td>Conjuntos de datos que llegaron antes de su plantilla.</td><td>Configure template timeout-rate 1 en el switch o espere su refresco.</td></tr>
+<tr><td><code>no_tuple</code></td><td>Registros sin direcciones IP (flujos solo de capa 2), inútiles para FlowLink.</td><td>Active la exportación de flujos IP en el switch.</td></tr>
+<tr><td><code>filtered</code></td><td>Flujos eliminados por convert.direction.</td><td>Cambie convert.direction si no es lo esperado.</td></tr>
+<tr><td><code>exporter_limit</code></td><td>Datagramas de sesiones nuevas rechazadas porque se alcanzó convert.max_exporters.</td><td>Aumente convert.max_exporters.</td></tr>
+<tr><td><code>template_rejects</code></td><td>Plantillas no guardadas por superar los límites de tamaño.</td><td>Aumente convert.max_fields_per_template o max_templates_per_exporter.</td></tr>
+<tr><td><code>v6_on_v5</code></td><td>Flujos IPv6 descartados por una salida NetFlow v5 (v5 no admite IPv6).</td><td>Use protocol ipfix o netflow9.</td></tr>
+<tr><td><code>send_errors</code></td><td>Datagramas que no se pudieron enviar, o salidas sin un flujo utilizable.</td><td>Revise el destino de la salida y el colector.</td></tr>
+<tr><td><code>restamped</code></td><td>Flujos cuyos tiempos se corrigieron porque el reloj del switch está desfasado.</td><td>Corrija NTP y la zona horaria del switch.</td></tr>
+<tr><td><code>sampling_defaulted</code></td><td>Flujos que usaron input.&lt;name&gt;.sampling_rate porque el switch no informa la tasa.</td><td>Defina input.&lt;name&gt;.sampling_override para ese switch.</td></tr>
+<tr><td><code>datagrams_malformed</code></td><td>Datagramas rechazados por completo (la primera parte de malformed).</td><td>Igual que malformed.</td></tr>
+<tr><td><code>datagrams_decoded</code></td><td>Datagramas aceptados y decodificados.</td><td></td></tr>
+<tr><td><code>truncated</code></td><td>Conjuntos de datos cortados dentro de un registro; se pierde el resto del conjunto.</td><td>Fallo del switch o truncamiento; capture con debug-capture.</td></tr>
+<tr><td><code>sets_ignored</code></td><td>Conjuntos con un id reservado, omitidos sin leer.</td><td></td></tr>
+<tr><td><code>pkts_defaulted</code></td><td>Flujos sin contador de paquetes (se envían como 1).</td><td>Agregue contadores de paquetes al registro del switch.</td></tr>
+<tr><td><code>bytes_defaulted</code></td><td>Flujos sin contador de bytes (se envían como 0).</td><td>Agregue contadores de bytes al registro del switch.</td></tr>
+<tr><td><code>time_defaulted</code></td><td>Flujos sin hora de inicio o fin (se copia la otra o la hora de exportación).</td><td></td></tr>
+<tr><td><code>time_clamped</code></td><td>Flujos con fin antes del inicio o una hora anterior a 1970, corregidos.</td><td>Revise el reloj del switch.</td></tr>
+<tr><td><code>values_clamped</code></td><td>Valores más anchos que su campo estándar, recortados a su ancho.</td><td></td></tr>
+<tr><td><code>flows_forwarded</code></td><td>Flujos entregados a las salidas (tras el filtro de dirección).</td><td></td></tr>
+<tr><td><code>flows_offered</code></td><td>Flujos entregados a salidas (reenviados × número de salidas).</td><td></td></tr>
+<tr><td><code>encode_dropped</code></td><td>Flujos que un codificador rechazó.</td><td>Aumente output.&lt;name&gt;.max_datagram.</td></tr>
+<tr><td><code>flows_lost_output</code></td><td>Flujos perdidos porque la salida no tiene un flujo utilizable.</td><td>Vea el último error de la salida en status.</td></tr>
+<tr><td><code>flows_queued</code></td><td>Flujos escritos en datagramas de salida.</td><td></td></tr>
+<tr><td><code>flows_lost_send</code></td><td>Flujos dentro de datagramas cuyo envío falló.</td><td>Revise el colector y la ruta.</td></tr>
+<tr><td><code>direction_unknown</code></td><td>Flujos sin dirección, exportados como ingress.</td><td></td></tr>
+<tr><td><code>time_wrapped</code></td><td>Tiempos v9/v5 fuera de la ventana de uptime de 32 bits.</td><td>Use protocol ipfix.</td></tr>
+<tr><td><code>v5_saturated</code></td><td>Contadores v5 por encima de 2^32-1, saturados.</td><td>Use protocol ipfix o netflow9.</td></tr>
+<tr><td><code>v5_ifindex</code></td><td>Índice de interfaz v5 mayor que 65535, enviado como 0.</td><td>Use protocol ipfix o netflow9.</td></tr>
+<tr><td><code>v5_rate</code></td><td>Tasa de muestreo v5 no transportada con exactitud (una tasa de 14 bits por datagrama).</td><td>Use protocol ipfix o netflow9.</td></tr>
+<tr><td><code>recv_errors</code></td><td>Errores de recepción en un socket de entrada.</td><td>Revise el journal (archivos abiertos, memoria).</td></tr>
+<tr><td><code>seq_missing</code></td><td>Números de secuencia saltados (pérdida estimada entre switch y nsconv).</td><td>Revise el camino de red y los descartes del kernel.</td></tr>
+<tr><td><code>seq_recovered</code></td><td>Números de secuencia que llegaron tarde (pérdida neta = seq_missing − seq_recovered).</td><td></td></tr>
+<tr><td><code>seq_reordered</code></td><td>Datagramas que llegaron fuera de orden.</td><td></td></tr>
+<tr><td><code>seq_resets</code></td><td>Reinicios de la numeración de secuencia de un switch (reinicio, tarjeta de línea).</td><td></td></tr>
+<tr><td><code>control_errors</code></td><td>Peticiones fallidas al socket de control.</td><td></td></tr>
+<tr><td><code>history_dropped</code></td><td>Resúmenes de sesiones inactivas descartados porque el historial está lleno.</td><td></td></tr>
+<tr><td><code>kernel_drops (per input)</code></td><td>Datagramas que el kernel descartó por búfer lleno; nunca llegan a datagrams_in.</td><td>Aumente net.core.rmem_max e input.&lt;name&gt;.recv_buffer_bytes.</td></tr>
+</tbody>
+</table></div>
+<!-- /gen:counters -->
+  <h3 id="sec-reference-codigos-de-salida">Códigos de salida</h3>
+  <p>Cada comando salvo <code>run</code>, <code>tui</code> y <code>logs -f</code> termina con <code>NSCONV-RESULT schema=1 version=… command=… code=… status=…</code> (en stderr con <code>--json</code>).</p>
+  <!-- gen:exit -->
+<div class="tw"><table class="ref">
+<thead><tr><th>Código</th><th>Estado</th><th>Significado</th></tr></thead>
+<tbody>
+<tr><td><code>0</code></td><td><code>ok</code></td><td>Éxito.</td></tr>
+<tr><td><code>1</code></td><td><code>warning</code></td><td>Hecho con un aviso, p. ej. salud degradada.</td></tr>
+<tr><td><code>2</code></td><td><code>failure</code></td><td>Falló: el daemon no corre, configuración inválida, error de envío.</td></tr>
+<tr><td><code>3</code></td><td><code>failure</code></td><td>Error de uso: argumentos incorrectos, archivo ilegible.</td></tr>
+<tr><td><code>4</code></td><td><code>failure</code></td><td>Permiso denegado: ejecute como root o como miembro del grupo nsconv.</td></tr>
+<tr><td><code>128+N</code></td><td>—</td><td>Terminado por la señal N (p. ej. 130 con Ctrl-C).</td></tr>
+</tbody>
+</table></div>
+<!-- /gen:exit -->
+  <h3 id="sec-reference-archivos-y-rutas">Archivos y rutas</h3>
+  <div class="tw"><table>
+    <tr><th>Ruta</th><th>Contenido</th></tr>
+    <tr><td><code>/usr/bin/nsconvctl</code> (RPM), <code>/usr/local/bin/nsconvctl</code> (install)</td><td>Binario</td></tr>
+    <tr><td><code>/usr/lib/systemd/system/nsconv.service</code> (RPM), <code>/etc/systemd/system/nsconv.service</code> (install)</td><td>Unidad systemd; usuario y grupo <code>nsconv</code>, única capacidad <code>CAP_NET_RAW</code></td></tr>
+    <tr><td><code>/etc/nsconv/nsconv.toml</code></td><td>Configuración, root:nsconv 0640</td></tr>
+    <tr><td><code>/var/lib/nsconv/templates.json</code></td><td>Plantillas aprendidas (se escribe como máximo una vez por minuto y solo si cambiaron)</td></tr>
+    <tr><td><code>/var/lib/nsconv/dismissed.json</code>, <code>history.json</code></td><td>Alertas silenciadas; resúmenes de sesiones de exportador inactivas</td></tr>
+    <tr><td><code>/run/nsconv/ctl.sock</code></td><td>Socket de control, nsconv:nsconv 0660</td></tr>
+    <tr><td><code>/usr/lib/sysctl.d/90-nsconv.conf</code></td><td><code>net.core.rmem_max = 8388608</code> (RPM)</td></tr>
+    <tr><td><code>/usr/share/doc/nsconv/README.md</code></td><td>README breve (RPM)</td></tr>
+    <tr><td>journal, unidad <code>nsconv</code></td><td>Logs (<code>journalctl -u nsconv</code>)</td></tr>
+  </table></div>
+  <div class="ref-list">
+    <div class="ref-title">Fuentes</div>
+    <ol>
+      <li><a href="https://github.com/roschereric/netstream-converter">nsconv 0.1.0-rc1 — generado a partir del código de esta versión — github.com/roschereric/netstream-converter</a></li>
+    </ol>
+  </div>
+</div>
+
+<header class="part" id="capture-kit" data-nav="Kit de captura">
+  <h1>Kit de captura NetStream</h1>
+  <p class="lead">Recolecte la evidencia que necesitamos de sus switches Huawei en aproximadamente una hora.</p>
+</header>
+
+<div class="section" id="ck-overview">
+  <h2>Resumen</h2>
+  <p>Para planificar cómo sus switches Huawei alimentarán a Illumio FlowLink a través de nsconv necesitamos ver qué exportan realmente. Este kit le indica cómo reunir esa evidencia con tres elementos: una captura de red corta, la salida de algunos comandos <code>display</code> y un cuestionario breve. No se instala ni se modifica nada en los switches, salvo un ajuste opcional descrito en la Parte 1.</p>
+
+  <figure class="diagram">
+    <figcaption>Qué recolecta y a dónde va</figcaption>
+    <svg viewBox="0 0 700 272" xmlns="http://www.w3.org/2000/svg">
+      <rect x="10" y="40" width="180" height="110" rx="8" fill="#F3F5F7" stroke="#2B3440" stroke-width="2"/>
+      <text x="100" y="75" text-anchor="middle" font-weight="700" font-size="13" fill="#2B3440">Switch Huawei</text>
+      <text x="100" y="97" text-anchor="middle" font-size="11" fill="#5B6672">Nombre de ejemplo:</text>
+      <text x="100" y="114" text-anchor="middle" font-size="11" fill="#5B6672">tor-sw-example-01</text>
+      <rect x="270" y="40" width="180" height="110" rx="8" fill="#F3F5F7" stroke="#2B3440" stroke-width="2"/>
+      <text x="360" y="68" text-anchor="middle" font-weight="700" font-size="13" fill="#2B3440">Host que recibe</text>
+      <text x="360" y="85" text-anchor="middle" font-weight="700" font-size="13" fill="#2B3440">NetStream</text>
+      <text x="360" y="107" text-anchor="middle" font-size="11" fill="#5B6672">Ejemplo: 192.0.2.10</text>
+      <text x="360" y="124" text-anchor="middle" font-size="11" fill="#1F6F8B" font-weight="600">tcpdump crea el .pcap</text>
+      <rect x="530" y="40" width="160" height="110" rx="8" fill="none" stroke="#1F6F8B" stroke-width="2" stroke-dasharray="6,3"/>
+      <text x="610" y="68" text-anchor="middle" font-weight="700" font-size="13" fill="#2B3440">Su canal</text>
+      <text x="610" y="85" text-anchor="middle" font-weight="700" font-size="13" fill="#2B3440">aprobado</text>
+      <text x="610" y="112" text-anchor="middle" font-size="11" fill="#5B6672">hacia el contacto que</text>
+      <text x="610" y="128" text-anchor="middle" font-size="11" fill="#5B6672">le envió este kit</text>
+      <line x1="190" y1="95" x2="260" y2="95" stroke="#2B3440" stroke-width="1.5" stroke-dasharray="6,4"/>
+      <polygon points="260,91 270,95 260,99" fill="#2B3440"/>
+      <rect x="195" y="62" width="70" height="22" rx="4" fill="#1F6F8B"/>
+      <text x="230" y="77" text-anchor="middle" font-size="10" fill="white" font-weight="600">NetStream</text>
+      <line x1="450" y1="95" x2="520" y2="95" stroke="#2B3440" stroke-width="1.5" stroke-dasharray="6,4"/>
+      <polygon points="520,91 530,95 520,99" fill="#2B3440"/>
+      <rect x="455" y="62" width="60" height="22" rx="4" fill="#1F6F8B"/>
+      <text x="485" y="77" text-anchor="middle" font-size="10" fill="white" font-weight="600">Envío</text>
+      <rect x="10" y="190" width="180" height="70" rx="8" fill="#F3F5F7" stroke="#2B3440" stroke-width="2"/>
+      <text x="100" y="218" text-anchor="middle" font-weight="700" font-size="13" fill="#2B3440">CLI del switch</text>
+      <text x="100" y="238" text-anchor="middle" font-size="11" fill="#5B6672">comandos display</text>
+      <line x1="190" y1="225" x2="610" y2="225" stroke="#2B3440" stroke-width="1.5" stroke-dasharray="6,4"/>
+      <line x1="610" y1="225" x2="610" y2="160" stroke="#2B3440" stroke-width="1.5" stroke-dasharray="6,4"/>
+      <polygon points="606,160 610,150 614,160" fill="#2B3440"/>
+      <rect x="290" y="213" width="170" height="24" rx="4" fill="#1F6F8B"/>
+      <text x="375" y="229" text-anchor="middle" font-size="10" fill="white" font-weight="600">Archivos de texto</text>
+    </svg>
+  </figure>
+
+  <h3 id="ck-overview-que-responde-la-evidencia">Qué responde la evidencia</h3>
+  <ul>
+    <li>Si los switches exportan <strong>flujos IP</strong> (direcciones y puertos IPv4/IPv6) o solo flujos de <strong>capa 2</strong> (MAC/VLAN).</li>
+    <li>Qué <strong>versión de NetStream</strong> usa cada switch y si NetStream para IPv6 está configurado.</li>
+    <li>Si hay una <strong>tasa de muestreo</strong> configurada y si los flujos la informan.</li>
+    <li>Qué <strong>tarjetas de línea o miembros de stack</strong> exportan, el refresco de <strong>plantillas</strong> y el puerto UDP de origen.</li>
+    <li>Si el <strong>reloj, la zona horaria y el NTP</strong> de cada equipo son correctos.</li>
+    <li>El <strong>modelo y la versión de software</strong> exactos de cada switch.</li>
+  </ul>
+
+  <h3 id="ck-overview-que-necesita">Qué necesita</h3>
+  <ul>
+    <li><strong>Un host Linux que reciba los paquetes NetStream</strong> (el colector o cualquier host que vea el tráfico), con <code>tcpdump</code>.</li>
+    <li><strong>Acceso de lectura a cada switch</strong> (consola o SSH) para ejecutar comandos <code>display</code>.</li>
+    <li><strong>Aproximadamente una hora en total.</strong> La captura corre mientras reúne la salida de los comandos.</li>
+  </ul>
+  <div class="ref-list">
+    <div class="ref-title">Fuentes</div>
+    <ol>
+      <li><a href="https://info.support.huawei.com/info-finder/encyclopedia/en/NetStream.html">Huawei Encyclopedia — NetStream — info.support.huawei.com/info-finder/encyclopedia/en/NetStream.html</a></li>
+      <li><a href="https://support.huawei.com/enterprise/en/doc/EDOC1100138131/3a962da5/netstream-configuration-commands">Huawei CloudEngine 12800 — NetStream configuration commands — support.huawei.com/enterprise/en/doc/EDOC1100138131/3a962da5/netstream-configuration-commands</a></li>
+    </ol>
+  </div>
+</div>
+
+<div class="section" id="ck-capture">
+  <h2>Parte 1: Capture el tráfico NetStream</h2>
+  <p>El switch envía NetStream como paquetes UDP hacia su colector. Registrar esos paquetes en el host receptor nos muestra exactamente qué exporta cada switch. Los paquetes contienen solo resúmenes de flujo (direcciones, puertos, protocolo y contadores), no el contenido de su tráfico.</p>
+
+  <div class="step">
+    <div class="step-number">1</div>
+    <div class="step-content">
+      <h4>Anote los valores que usará</h4>
+      <p>La interfaz de red del host receptor que ve los paquetes NetStream y la dirección IP de gestión o de origen de cada switch. Ejecute <code>date -u</code> en el host y anote el resultado: lo comparamos con el reloj del switch.</p>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-number">2</div>
+    <div class="step-content">
+      <h4>Inicie la captura</h4>
+      <p>Use un archivo por switch, o un archivo para todos (vea el segundo comando). Detenga con <code>Ctrl+C</code>, o use la forma con <code>timeout</code> para que se detenga sola.</p>
+    </div>
+  </div>
+
+<pre><span class="label">HOST DE CAPTURA (LINUX)</span>
+<span class="comment"># Un switch. Reemplace los valores entre corchetes angulares.</span>
+<span class="cmdlet">sudo tcpdump</span> <span class="param">-i</span> &lt;interfaz&gt; <span class="param">-s</span> 0 <span class="param">-nn</span> <span class="param">-w</span> netstream.pcap udp and host &lt;ip-del-switch&gt;
+
+<span class="comment"># Varios switches en un archivo; se detiene sola a los 40 minutos (2400 s).</span>
+<span class="cmdlet">sudo timeout</span> <span class="param">-s</span> INT 2400 tcpdump <span class="param">-i</span> &lt;interfaz&gt; <span class="param">-s</span> 0 <span class="param">-nn</span> <span class="param">-w</span> netstream.pcap \
+  udp and '(host &lt;ip-switch-1&gt; or host &lt;ip-switch-2&gt;)'
+</pre>
+
+  <div class="step">
+    <div class="step-number">3</div>
+    <div class="step-content">
+      <h4>Asegure que la captura incluya las plantillas</h4>
+      <p>Los switches con versión 9 describen sus registros en una plantilla que se envía solo de vez en cuando. Sin ella los registros no se pueden leer. Elija una opción.</p>
+    </div>
+  </div>
+  <div class="tw"><table>
+    <tr><th style="width:30%">Opción</th><th>Qué hacer</th></tr>
+    <tr><td><strong>A. Captura más larga</strong> (sin cambios en el switch)</td><td>Capture durante 40 minutos, de modo que cubra el refresco de plantillas por defecto de 30 minutos<sup class="ref">1</sup>.</td></tr>
+    <tr><td><strong>B. Refresco más corto</strong> (si su proceso de cambios lo permite)</td><td>Configure el refresco de plantillas en 1 minuto durante la captura, capture 15 minutos y luego restaure su valor anterior. Serie S y AR: <code>ip netstream export template timeout-rate 1</code>. CE: <code>netstream export ip template timeout-rate 1</code>. Use <code>?</code> para confirmar el nombre del comando en su versión de software.</td></tr>
+    <tr><td><strong>C. Captura al iniciar la exportación</strong></td><td>Si habilita o reinicia la exportación NetStream en una ventana de mantenimiento, inicie la captura justo antes. Los switches envían sus plantillas cuando comienza la exportación.</td></tr>
+  </table></div>
+
+  <div class="step">
+    <div class="step-number">4</div>
+    <div class="step-content">
+      <h4>Verifique el archivo</h4>
+      <p>Liste los primeros paquetes. Debe ver paquetes UDP desde la IP del switch hacia su colector. Muchos switches Huawei envían desde el puerto UDP de origen 40000<sup class="ref">1</sup>. Si el archivo está vacío, revise el nombre de la interfaz, la IP del switch y cualquier firewall entre el switch y el host.</p>
+    </div>
+  </div>
+
+<pre><span class="label">HOST DE CAPTURA (LINUX)</span>
+<span class="cmdlet">tcpdump</span> <span class="param">-nn</span> <span class="param">-r</span> netstream.pcap <span class="param">-c</span> 5
+</pre>
+
+  <div class="callout callout-info">
+    <div class="callout-label">¿No tiene acceso al host receptor?</div>
+    Use espejado de puertos (SPAN) en el puerto del switch que se conecta al colector y envíe el tráfico espejado a un host Linux que ejecute el mismo comando <code>tcpdump</code> sobre la interfaz de espejo. Use su procedimiento estándar de espejado de puertos.
+  </div>
+
+  <div class="ref-list">
+    <div class="ref-title">Fuentes</div>
+    <ol>
+      <li><a href="https://netconfcentral.org/modules/huawei-netstream/2019-06-27">Módulo YANG de NetStream de Huawei (refresco de plantillas 30 min, puerto de origen 40000) — netconfcentral.org/modules/huawei-netstream/2019-06-27</a></li>
+      <li><a href="https://www.tcpdump.org/manpages/tcpdump.1.html">Manual de tcpdump — tcpdump.org/manpages/tcpdump.1.html</a></li>
+    </ol>
+  </div>
+</div>
+
+<div class="section" id="ck-commands">
+  <h2>Parte 2: Reúna la información de los switches</h2>
+  <p>Ejecute los comandos siguientes en <strong>cada switch</strong> mientras corre la captura. Guarde la salida de cada switch en un archivo de texto (por ejemplo con el registro de sesión de su terminal). Si un comando no se reconoce en su versión de software, escriba el inicio del comando seguido de <code>?</code>, use la opción más cercana y continúe con el siguiente.</p>
+
+  <h3 id="ck-commands-2-1-modelo-software-y-tarjetas-de-linea">2.1 Modelo, software y tarjetas de línea</h3>
+<pre><span class="label">CLI DEL SWITCH</span>
+<span class="cmdlet">screen-length</span> 0 temporary
+<span class="cmdlet">display</span> version
+<span class="cmdlet">display</span> device
+</pre>
+
+  <h3 id="ck-commands-2-2-reloj-zona-horaria-y-ntp">2.2 Reloj, zona horaria y NTP</h3>
+  <p>Ejecute <code>display clock</code> en el momento en que ejecuta <code>date -u</code> en el host de captura, o anote ambas horas. Use el comando NTP que acepte su software: <code>ntp-service</code> en serie S y AR, <code>ntp</code> en CE.</p>
+<pre><span class="label">CLI DEL SWITCH</span>
+<span class="cmdlet">display</span> clock
+<span class="cmdlet">display</span> ntp-service status
+<span class="cmdlet">display</span> ntp-service sessions
+<span class="comment"># Software CE:</span>
+<span class="cmdlet">display</span> ntp status
+<span class="cmdlet">display</span> ntp sessions
+<span class="cmdlet">display</span> current-configuration | include clock
+<span class="cmdlet">display</span> current-configuration | include ntp
+</pre>
+
+  <h3 id="ck-commands-2-3-configuracion-de-netstream">2.3 Configuración de NetStream</h3>
+<pre><span class="label">CLI DEL SWITCH</span>
+<span class="cmdlet">display</span> current-configuration | include netstream
+<span class="cmdlet">display</span> current-configuration | include sampler
+</pre>
+  <p>Las líneas de interfaz (por ejemplo <code>ip netstream inbound</code> o <code>netstream inbound ip</code>) aparecen bajo su interfaz en la configuración completa. Si puede compartir la configuración completa, agregue la salida de <code>display current-configuration</code>. Si no, ejecute <code>display this</code> dentro de cada interfaz que tenga NetStream e incluya el nombre de la interfaz.</p>
+
+  <h3 id="ck-commands-2-4-estado-y-estadisticas-de-netstream">2.4 Estado y estadísticas de NetStream</h3>
+  <p>Liste los comandos display de NetStream de su versión, ejecute los de estadísticas y de caché de flujos y agregue su salida.</p>
+<pre><span class="label">CLI DEL SWITCH</span>
+<span class="cmdlet">display</span> ip netstream ?
+<span class="comment"># Software CE:</span>
+<span class="cmdlet">display</span> netstream ?
+</pre>
+
+  <h3 id="ck-commands-que-buscamos-en-la-configuracion">Qué buscamos en la configuración</h3>
+  <div class="tw"><table>
+    <tr><th style="width:38%">Si la salida muestra</th><th>Nos indica</th></tr>
+    <tr><td><code>export version 5</code>, <code>9</code> o <code>ipfix</code></td><td>La versión de NetStream en uso</td></tr>
+    <tr><td>Líneas que empiezan con <code>ipv6 netstream</code></td><td>NetStream para IPv6 está configurado</td></tr>
+    <tr><td>Líneas que mencionan <code>ethernet</code></td><td>Hay flujos de capa 2 (Ethernet) configurados</td></tr>
+    <tr><td>Líneas <code>sampler</code></td><td>Modo, tasa y dirección del muestreo</td></tr>
+    <tr><td><code>template timeout-rate</code> y <code>template option</code></td><td>Refresco de plantillas y plantillas de opciones</td></tr>
+    <tr><td><code>export source</code> y <code>export host</code></td><td>Dirección de origen de la exportación, dirección y puerto del colector</td></tr>
+    <tr><td>Líneas <code>slot</code> y la salida de <code>display device</code></td><td>Tarjetas de línea y miembros de stack que exportan</td></tr>
+  </table></div>
+  <div class="ref-list">
+    <div class="ref-title">Fuentes</div>
+    <ol>
+      <li><a href="https://support.huawei.com/enterprise/en/doc/EDOC1100138131/3a962da5/netstream-configuration-commands">Huawei CloudEngine 12800 — NetStream configuration commands — support.huawei.com/enterprise/en/doc/EDOC1100138131/3a962da5/netstream-configuration-commands</a></li>
+      <li><a href="https://info.support.huawei.com/info-finder/encyclopedia/en/NetStream.html">Huawei Encyclopedia — NetStream — info.support.huawei.com/info-finder/encyclopedia/en/NetStream.html</a></li>
+    </ol>
+  </div>
+</div>
+
+<div class="section" id="ck-questionnaire">
+  <h2>Parte 3: Cuestionario</h2>
+  <p>Responda en un archivo de texto o en su correo, un bloque por switch. Bastan respuestas cortas, y "no se sabe" es una respuesta válida.</p>
+
+  <h3 id="ck-questionnaire-para-cada-switch">Para cada switch</h3>
+  <div class="tw"><table>
+    <tr><th style="width:5%">#</th><th style="width:50%">Pregunta</th><th>Respuesta de ejemplo (ilustrativa)</th></tr>
+    <tr><td>1</td><td>Nombre del switch, IP de gestión y rol</td><td>tor-sw-example-01, 198.51.100.11, top of rack</td></tr>
+    <tr><td>2</td><td>¿Equipo individual, stack o chasis con tarjetas de línea?</td><td>Stack de dos miembros</td></tr>
+    <tr><td>3</td><td>Versión o versiones de NetStream exportadas (5, 8, 9)</td><td>9</td></tr>
+    <tr><td>4</td><td>¿También está configurado NetStream para IPv6?</td><td>No</td></tr>
+    <tr><td>5</td><td>Tipos de flujo exportados: IP, Ethernet (capa 2) o ambos</td><td>IP</td></tr>
+    <tr><td>6</td><td>¿Hay muestreo configurado? Tasa y dirección (entrada, salida)</td><td>1 de cada 1000, entrada</td></tr>
+    <tr><td>7</td><td>Interfaces con NetStream habilitado</td><td>Todos los enlaces ascendentes</td></tr>
+    <tr><td>8</td><td>Dirección y puerto UDP del colector, y la instancia VPN si existe</td><td>192.0.2.10, puerto 2055</td></tr>
+    <tr><td>9</td><td>¿Se cambiaron los valores por defecto de refresco de plantillas o de timeouts?</td><td>No</td></tr>
+    <tr><td>10</td><td>Servidores NTP en uso y zona horaria que debe usar el switch</td><td>Dos servidores, UTC-5</td></tr>
+  </table></div>
+
+  <h3 id="ck-questionnaire-general">General</h3>
+  <div class="tw"><table>
+    <tr><th style="width:5%">#</th><th style="width:50%">Pregunta</th><th>Respuesta de ejemplo (ilustrativa)</th></tr>
+    <tr><td>11</td><td>Hora de inicio, hora de fin y zona horaria de la captura, y el valor de <code>date -u</code> del host</td><td>2026-11-05 14:00 a 14:40</td></tr>
+    <tr><td>12</td><td>¿Qué colector o herramienta recibe hoy el NetStream, si hay alguno?</td><td>Colector de flujos existente</td></tr>
+    <tr><td>13</td><td>¿Hubo algo inusual durante la captura (mantenimiento, caída, cambio de configuración)?</td><td>Nada</td></tr>
+    <tr><td>14</td><td>Contacto técnico para preguntas de seguimiento</td><td>Su nombre y correo</td></tr>
+  </table></div>
+  <div class="ref-list">
+    <div class="ref-title">Fuentes</div>
+    <ol>
+      <li><a href="https://support.huawei.com/enterprise/en/doc/EDOC1100138131/3a962da5/netstream-configuration-commands">Huawei CloudEngine 12800 — NetStream configuration commands — support.huawei.com/enterprise/en/doc/EDOC1100138131/3a962da5/netstream-configuration-commands</a></li>
+    </ol>
+  </div>
+</div>
+
+<div class="section" id="ck-return">
+  <h2>Parte 4: Nombre y envíe los archivos</h2>
+
+  <h3 id="ck-return-nombres-de-archivo">Nombres de archivo</h3>
+  <p>Use este patrón, en minúsculas y sin espacios: <code>&lt;sitio&gt;_&lt;switch&gt;_&lt;contenido&gt;_&lt;aaaammdd&gt;.&lt;ext&gt;</code>. Los nombres siguientes son ejemplos.</p>
+  <div class="tw"><table>
+    <tr><th style="width:55%">Archivo (nombres de ejemplo)</th><th>Contenido</th></tr>
+    <tr><td><code>sitio-ejemplo_tor-sw-example-01_netstream_20261105.pcap</code></td><td>Captura de la Parte 1</td></tr>
+    <tr><td><code>sitio-ejemplo_tor-sw-example-01_display_20261105.txt</code></td><td>Salida de comandos de la Parte 2</td></tr>
+    <tr><td><code>sitio-ejemplo_cuestionario_20261105.txt</code></td><td>Respuestas de la Parte 3</td></tr>
+  </table></div>
+
+  <h3 id="ck-return-empaquete-y-envie">Empaquete y envíe</h3>
+  <p>Reúna todos los archivos en una carpeta, comprímala y genere una suma de verificación para que podamos confirmar que el archivo llegó íntegro.</p>
+<pre><span class="label">HOST DE CAPTURA (LINUX)</span>
+<span class="cmdlet">tar</span> <span class="param">-czf</span> sitio-ejemplo_netstream-kit_20261105.tar.gz sitio-ejemplo/
+<span class="cmdlet">sha256sum</span> sitio-ejemplo_netstream-kit_20261105.tar.gz
+</pre>
+  <p>Envíe el archivo comprimido y la línea de la suma de verificación al contacto que le entregó este kit.</p>
+
+  <div class="callout callout-warning">
+    <div class="callout-label">Comparta por su canal aprobado</div>
+    La captura contiene las direcciones IP internas de sus servidores y equipos de red, y la salida de los comandos contiene nombres y direcciones de equipos. Envíe los archivos por el canal de intercambio de archivos que su organización apruebe para este tipo de datos. Los comandos filtrados de este kit no muestran contraseñas ni claves; revise los archivos antes de enviarlos si agregó la configuración completa.
+  </div>
+
+  <h3 id="ck-return-lista-de-verificacion-final">Lista de verificación final</h3>
+  <ul class="checklist">
+    <li><strong>Archivo de captura</strong> — un archivo por switch, o uno con todos los switches, de al menos 15 minutos con plantillas, o de 40 minutos.</li>
+    <li><strong>Salida de comandos</strong> — un archivo de texto por switch con los comandos de la Parte 2.</li>
+    <li><strong>Cuestionario</strong> — respuestas para cada switch y las preguntas generales.</li>
+    <li><strong>Horas</strong> — el valor <code>date -u</code> del host y el valor <code>display clock</code> de cada switch.</li>
+    <li><strong>Paquete</strong> — archivo comprimido y suma de verificación enviados por el canal aprobado.</li>
+  </ul>
+  <div class="ref-list">
+    <div class="ref-title">Fuentes</div>
+    <ol>
+      <li><a href="https://www.gnu.org/software/coreutils/manual/html_node/sha2-utilities.html">GNU Coreutils — sha2 utilities — gnu.org/software/coreutils/manual/html_node/sha2-utilities.html</a></li>
+    </ol>
+  </div>
+</div>
+
+<footer class="doc-foot">
+  <p><strong>Herramienta comunitaria no oficial.</strong> nsconv no es un producto de Illumio y no tiene soporte de Illumio. Se entrega tal cual ("as is"), sin garantía de ningún tipo (licencia MIT).</p>
+  <p>Illumio, FlowLink y PCE son nombres de productos de Illumio, Inc.; Huawei y NetStream pertenecen a Huawei Technologies Co., Ltd. Se usan aquí solo para nombrar los productos con los que funciona nsconv. Valide los detalles técnicos con la documentación oficial de sus versiones de producto.</p>
+  <p>Código y versiones: <a href="https://github.com/roschereric/netstream-converter">github.com/roschereric/netstream-converter</a></p>
+</footer>
+</div>
+</main>
+<script>
+(function () {
+  // copy buttons on code blocks (the label line is not copied)
+  document.querySelectorAll("main pre").forEach(function (pre) {
+    var box = document.createElement("div"); box.className = "code";
+    pre.parentNode.insertBefore(box, pre); box.appendChild(pre);
+    var b = document.createElement("button"); b.className = "copy"; b.type = "button"; b.textContent = "Copiar";
+    b.addEventListener("click", function () {
+      var c = pre.cloneNode(true), l = c.querySelector(".label"); if (l) l.remove();
+      navigator.clipboard.writeText(c.textContent.replace(/^\n+/, "")).then(function () {
+        b.textContent = "Copiado"; setTimeout(function () { b.textContent = "Copiar"; }, 1500);
+      });
+    });
+    box.appendChild(b);
+  });
+  // phone: close the menu after a jump
+  var toggle = document.getElementById("navtoggle");
+  var pinned = null;  // a heading jumped to from the menu stays highlighted while it is at the top
+  document.querySelectorAll(".nav a").forEach(function (a) { a.addEventListener("click", function () {
+    toggle.checked = false; var h = a.getAttribute("href"); pinned = h.charAt(0) === "#" ? document.getElementById(h.slice(1)) : null;
+  }); });
+  // highlight the section being read
+  var links = {}, heads = [];
+  document.querySelectorAll('.nav a[href^="#"]').forEach(function (a) {
+    var el = document.getElementById(a.getAttribute("href").slice(1)); if (el) { links[el.id] = a; heads.push(el); }
+  });
+  var current = null;
+  function update() {
+    var y = window.innerHeight * 0.25, best = heads[0];
+    for (var i = 0; i < heads.length; i++) { if (heads[i].getBoundingClientRect().top <= y) best = heads[i]; else break; }
+    if (pinned) { var pt = pinned.getBoundingClientRect().top; if (pt > -8 && pt < 140) best = pinned; else pinned = null; }
+    if (!best || best === current) return;
+    if (current) { links[current.id].classList.remove("active"); var o = links[current.id].closest("ul.nav > li"); if (o) o.classList.remove("current"); }
+    current = best; var a = links[best.id]; a.classList.add("active");
+    var li = a.closest("ul.nav > li"); if (li) li.classList.add("current");
+    var s = document.getElementById("sidebar"), r = a.getBoundingClientRect();
+    if (r.top < 60 || r.bottom > window.innerHeight - 20) s.scrollTop += r.top - window.innerHeight / 3;
+  }
+  var queued = false;
+  window.addEventListener("scroll", function () { if (!queued) { queued = true; requestAnimationFrame(function () { queued = false; update(); }); } }, { passive: true });
+  update();
+})();
+</script>
+</body>
+</html>
