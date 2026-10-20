@@ -1,0 +1,453 @@
+/* ============================================================
+ * Illumio Branded Report — screen + print CSS
+ * Brand: Illumio Orange & Server Slate — verified vs Brand Hub (Frontify)
+ * Typography: Montserrat (bundled TTF), JetBrains Mono for code.
+ *
+ * THIS FILE IS CANONICAL AND READ-ONLY FOR REPORT GENERATION.
+ * scripts/check_brand.py hash-verifies it. Per-document tweaks go in
+ * the <style id="doc-overrides"> block of the report HTML, never here.
+ * If you intentionally fork it for another brand, add the marker
+ * "FORKED-CSS" inside this top comment so the brand check downgrades
+ * the hash mismatch to a warning.
+ *
+ * Link it with:  <link rel="stylesheet" href="styles/report.css">
+ * WeasyPrint resolves this file and ../assets/* relative to the HTML.
+ * ============================================================ */
+
+/* ---------- Bundled fonts (no network needed at render time) ---------- */
+@font-face { font-family: 'Montserrat'; font-weight: 300; font-style: normal; src: url('../assets/fonts/Montserrat-Light.ttf') format('truetype'); }
+@font-face { font-family: 'Montserrat'; font-weight: 400; font-style: normal; src: url('../assets/fonts/Montserrat-Regular.ttf') format('truetype'); }
+@font-face { font-family: 'Montserrat'; font-weight: 500; font-style: normal; src: url('../assets/fonts/Montserrat-Medium.ttf') format('truetype'); }
+@font-face { font-family: 'Montserrat'; font-weight: 600; font-style: normal; src: url('../assets/fonts/Montserrat-SemiBold.ttf') format('truetype'); }
+@font-face { font-family: 'Montserrat'; font-weight: 700; font-style: normal; src: url('../assets/fonts/Montserrat-Bold.ttf') format('truetype'); }
+@font-face { font-family: 'Montserrat'; font-weight: 800; font-style: normal; src: url('../assets/fonts/Montserrat-ExtraBold.ttf') format('truetype'); }
+@font-face { font-family: 'Montserrat'; font-weight: 400; font-style: italic; src: url('../assets/fonts/Montserrat-Italic.ttf') format('truetype'); }
+@font-face { font-family: 'Montserrat'; font-weight: 700; font-style: italic; src: url('../assets/fonts/Montserrat-BoldItalic.ttf') format('truetype'); }
+@font-face { font-family: 'JetBrains Mono'; font-weight: 400; font-style: normal; src: url('../assets/fonts/JetBrainsMono-Regular.ttf') format('truetype'); }
+@font-face { font-family: 'JetBrains Mono'; font-weight: 700; font-style: normal; src: url('../assets/fonts/JetBrainsMono-Bold.ttf') format('truetype'); }
+
+/* ---------- Design tokens ---------- */
+:root {
+    /* Official brand anchors — sampled from the official logo asset */
+    --ill-orange: #FF5500;          /* Illumio Orange (logo isotype) */
+    --ill-orange-light: #FF7A33;    /* tint for secondary accents */
+    --ill-orange-deep: #C43C00;     /* shade for labels on light bg */
+    --ill-slate: #313638;           /* Illumio Slate (logo wordmark) */
+    --ill-syscyan: #2D454C;         /* System Cyan 100 — cool dark support */
+    --ill-syscyan-deep: #1A2C32;    /* System Cyan 120 — dark backgrounds */
+
+    /* Neutrals (slate-harmonized) */
+    --ill-paper: #FFFFFF;           /* page background */
+    --ill-mist: #F7F4EE;            /* Zero Trust Tan 100 — panel/diagram fills */
+    --ill-line: #EAEBEB;            /* Server Slate 10 — borders, dividers */
+    --ill-gray-700: #464A4C;        /* Server Slate 90 — paragraph text */
+    --ill-gray-600: #6F7274;        /* Server Slate 70 — secondary text */
+    --ill-gray-400: #989A9B;        /* Server Slate 50 — metadata, labels */
+    --ill-gray-300: #C1C3C3;        /* Server Slate 30 — footer text */
+    --ill-white: #FFFFFF;
+
+    /* Semantic */
+    --ill-success: #166644;      /* Safeguard Green 100 */
+    --ill-info-blue: #356069;    /* System Cyan 80 */
+    --ill-danger: #BE122F;       /* Risk Red 100 */
+    --ill-code-bg: #1A2C32;         /* System Cyan 120 — code blocks */
+
+    /* Tertiary accents — use SPARINGLY per brand guidelines */
+    --ill-gold: #FFA22F;            /* Circuit Gold 100 — chart highlights */
+    --ill-chartreuse: #BBFF22;      /* Cyber Chartreuse — fine lines only */
+
+    /* Back-compat aliases (older docs / snippets keep working) */
+    --ill-charcoal: #313638;
+    --ill-cream: #F7F4EE;
+    --ill-cream-dark: #EAEBEB;
+    --ill-orange-dark: #C43C00;
+
+    --font-sans: 'Montserrat', Arial, -apple-system, 'Segoe UI', sans-serif; /* official self-publishing stack; Arial = brand fallback */
+    --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: var(--font-sans);
+    color: var(--ill-gray-700);
+    background: var(--ill-paper);
+    line-height: 1.7;
+    font-size: 14px;
+}
+
+/* ============================================================
+ * COVER — full-bleed Illumio Orange, 2026 corporate template look:
+ * white logo top-left, light-weight title, bold subtitle, byline,
+ * date, and a full-height isometric pattern strip on the right
+ * (official Pattern & Shape system: rhombus grid + containers).
+ * Variants: .cover--slate (slate bg), .cover--paper (white bg).
+ * ============================================================ */
+.cover {
+    height: 100vh;
+    background: var(--ill-orange);
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;             /* own stacking context */
+}
+.cover-art {                        /* decorative strip, right side */
+    position: absolute;
+    top: 0; right: 0; bottom: 0;
+    width: 26.5%;
+    z-index: 1;
+    overflow: hidden;
+}
+.cover-art img, .cover-art svg {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.cover-content {
+    position: absolute;
+    z-index: 2;                     /* always above decoration */
+    left: 8.5%; top: 0; bottom: 0;
+    width: 60%;                     /* stays clear of the art strip */
+    display: flex;
+    flex-direction: column;
+}
+.cover-logo { margin-top: 9%; }
+.cover-logo img { height: 42px; display: block; }
+.cover-spacer { flex: 1 1 auto; }   /* pushes title block to ~45% height */
+.cover-tag {
+    display: inline-block;
+    font-size: 12px; font-weight: 600;
+    letter-spacing: 2.5px; text-transform: uppercase;
+    color: rgba(255,255,255,0.85);
+    margin-bottom: 18px;
+}
+.cover h1 {
+    font-size: 52px;
+    font-weight: 300;               /* light — matches corporate template */
+    color: #fff;
+    line-height: 1.14;
+    letter-spacing: 0;
+    margin-bottom: 30px;
+    max-width: 100%;
+}
+.cover .subtitle {
+    font-size: 19px;
+    font-weight: 700;               /* bold — matches corporate template */
+    color: #fff;
+    line-height: 1.45;
+    max-width: 92%;
+    margin-bottom: 26px;
+}
+.cover-byline { font-size: 15px; font-weight: 500; color: rgba(255,255,255,0.95); margin-bottom: 6px; }
+.cover-date   { font-size: 15px; font-weight: 400; color: rgba(255,255,255,0.78); }
+.cover-disclaimer { margin-top: 30px; font-size: 11px; line-height: 1.55; color: rgba(255,255,255,0.55); max-width: 88%; }
+.cover-bottom-spacer { flex: 1 2 auto; }
+.cover-meta { display: flex; gap: 40px; margin-top: 22px; }   /* optional extra metadata row */
+.cover-meta-item { color: rgba(255,255,255,0.6); font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; }
+.cover-meta-item strong { display: block; color: rgba(255,255,255,0.95); font-weight: 600; font-size: 13px; text-transform: none; letter-spacing: 0; margin-top: 4px; }
+.cover-footer {
+    position: absolute;
+    bottom: 26px; left: 8.5%; right: 30%;
+    display: flex; justify-content: space-between;
+    font-size: 10px; color: rgba(255,255,255,0.6);
+    z-index: 2; letter-spacing: 0.5px;
+}
+
+/* Cover variants */
+.cover--slate { background: var(--ill-slate); }
+.cover--paper { background: var(--ill-paper); }
+.cover--paper h1 { color: var(--ill-slate); }
+.cover--paper .subtitle { color: var(--ill-orange-deep); }
+.cover--paper .cover-tag { color: var(--ill-gray-600); }
+.cover--paper .cover-byline { color: var(--ill-gray-700); }
+.cover--paper .cover-date { color: var(--ill-gray-600); }
+.cover--paper .cover-footer { color: var(--ill-gray-400); }
+.cover--paper .cover-disclaimer { color: var(--ill-gray-600); }
+
+/* ============================================================
+ * CONTENT
+ * ============================================================ */
+.content-wrap {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0;
+    background: var(--ill-paper);
+}
+.content-wrap::before { content: ''; display: block; height: 4px; background: var(--ill-orange); }
+
+.section {
+    padding: 36px 60px;
+    border-bottom: 1px solid var(--ill-line);
+}
+.section:last-of-type { border-bottom: none; }
+
+.section-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 24px; padding-bottom: 12px;
+    border-bottom: 1px solid var(--ill-line);
+}
+.section-header img { height: 20px; }
+.section-label { font-size: 10.5px; font-weight: 600; color: var(--ill-gray-400); text-transform: uppercase; letter-spacing: 1.6px; }
+
+/* ---------- Typography ---------- */
+h2 {
+    font-size: 25px; font-weight: 700; color: var(--ill-slate);
+    margin-bottom: 14px; line-height: 1.2;
+}
+h2::before {                        /* pixel tick — echoes the logo glyph */
+    content: '';
+    display: inline-block;
+    width: 10px; height: 10px;
+    background: var(--ill-orange);
+    margin-right: 12px;
+}
+h3 { font-size: 16px; font-weight: 700; color: var(--ill-slate); margin-top: 24px; margin-bottom: 8px; }
+p { margin-bottom: 10px; color: var(--ill-gray-700); font-size: 13.5px; }
+a { color: var(--ill-orange-deep); }
+strong { color: var(--ill-slate); }
+
+/* ---------- Callouts ---------- */
+.callout { border-radius: 8px; padding: 14px 18px; margin: 16px 0; font-size: 13px; line-height: 1.65; }
+.callout-warning  { background: #FFF8EB; border-left: 4px solid var(--ill-orange); }  /* Circuit Gold 60 */
+.callout-info     { background: #E5F2F9; border-left: 4px solid var(--ill-info-blue); }  /* Cloud Cerulean 100 */
+.callout-success  { background: #E8F3EE; border-left: 4px solid var(--ill-success); }
+.callout-critical { background: #FBEEF0; border-left: 4px solid var(--ill-danger); }
+.callout-label { font-weight: 700; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+.callout-warning  .callout-label { color: var(--ill-orange-deep); }
+.callout-info     .callout-label { color: var(--ill-info-blue); }
+.callout-success  .callout-label { color: var(--ill-success); }
+.callout-critical .callout-label { color: var(--ill-danger); }
+
+/* ---------- Code ---------- */
+pre {
+    background: var(--ill-code-bg); color: #D9DCDD;
+    border-radius: 8px; padding: 16px 20px;
+    font-family: var(--font-mono);
+    font-size: 11.5px; line-height: 1.6; overflow-x: auto;
+    margin: 12px 0; position: relative; border-left: 4px solid var(--ill-orange);
+}
+pre .comment  { color: #7CAF6E; }
+pre .string   { color: #DB9A7B; }
+pre .param    { color: #9CDCFE; }
+pre .cmdlet   { color: #E3D390; }
+pre .variable { color: #C99BC4; }
+pre .label { position: absolute; top: 6px; right: 10px; font-size: 9px; color: #838688; text-transform: uppercase; letter-spacing: 1px; font-family: var(--font-sans); }
+/* Copy button — injected by assets/copy.js (HTML view only; hidden in print).
+   pre.has-copy is set by the script, so the PDF keeps .label at right:10px. */
+pre.has-copy { padding-right: 84px; }
+pre.has-copy .label { right: 84px; }
+.copy-btn { position: absolute; top: 8px; right: 10px; z-index: 2; font-family: var(--font-sans); font-size: 10px; font-weight: 600; letter-spacing: 0.4px; color: #D9DCDD; background: rgba(255,255,255,0.08); border: 1px solid #325158; border-radius: 5px; padding: 4px 10px; cursor: pointer; }
+.copy-btn:hover { background: var(--ill-orange); border-color: var(--ill-orange); color: #fff; }
+.copy-btn.copied { background: #299B65; border-color: #299B65; color: #fff; }
+code { background: var(--ill-mist); color: var(--ill-slate); padding: 2px 5px; border-radius: 3px; font-family: var(--font-mono); font-size: 12px; }
+
+/* ---------- Steps ---------- */
+.step { display: flex; gap: 14px; margin: 18px 0; align-items: flex-start; break-inside: avoid; }
+.step-number { flex-shrink: 0; width: 32px; height: 32px; background: var(--ill-orange); color: #fff; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; }
+.step-content { flex: 1; background: var(--ill-white); border-radius: 8px; padding: 14px 18px; border: 1px solid var(--ill-line); }
+.step-content h4 { font-size: 14px; font-weight: 700; color: var(--ill-slate); margin-bottom: 4px; }
+.step-content p { margin-bottom: 5px; font-size: 12.5px; }
+
+/* ---------- Tables ---------- */
+table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 12.5px; }
+th { background: var(--ill-slate); color: #fff; padding: 8px 10px; text-align: left; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.3px; }
+td { padding: 8px 10px; border-bottom: 1px solid var(--ill-line); background: var(--ill-white); }
+tr:nth-child(even) td { background: #FAF9F7; }
+
+/* ---------- Checklist ---------- */
+.checklist { list-style: none; margin: 12px 0; }
+.checklist li { padding: 7px 0 7px 28px; position: relative; border-bottom: 1px solid var(--ill-line); font-size: 12.5px; }
+.checklist li:last-child { border-bottom: none; }
+.checklist li::before { content: ''; position: absolute; left: 0; top: 9px; width: 15px; height: 15px; border: 2px solid var(--ill-orange); border-radius: 3px; }
+
+/* ---------- Diagrams ---------- */
+.diagram-container { background: var(--ill-white); border: 1px solid var(--ill-line); border-radius: 10px; padding: 22px; margin: 22px 0; text-align: center; break-inside: avoid; }
+.diagram-container .diagram-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--ill-gray-400); margin-bottom: 14px; font-weight: 600; }
+.diagram-container svg { max-width: 100%; height: auto; }
+
+/* ---------- Phases ---------- */
+.phase-spacer { display: none; }
+.phase-banner { background: var(--ill-slate); color: #fff; padding: 11px 16px; border-radius: 8px; margin: 28px 0 14px 0; display: flex; align-items: center; gap: 12px; break-inside: avoid; break-after: avoid; }
+.phase-banner .phase-num { background: var(--ill-orange); color: #fff; font-weight: 800; padding: 3px 10px; border-radius: 4px; font-size: 11px; }
+.phase-banner .phase-title { font-weight: 600; font-size: 14px; }
+
+/* ---------- Utility + legacy back-compat ---------- */
+.keep { break-inside: avoid; }                       /* generic keep-together utility */
+.docref {                                            /* LEGACY — superseded by .ref-list */
+    font-size: 11.5px; color: var(--ill-gray-600);
+    background: #FBF8F4; border-left: 3px solid var(--ill-orange);
+    padding: 8px 12px; border-radius: 0 6px 6px 0; margin: 10px 0;
+}
+.docref strong { color: var(--ill-slate); }
+
+/* ---------- Sources / official-documentation references ----------
+ * Every section that states product facts should end with one of these.
+ * URLs are printed in full so the PDF works on paper. */
+.ref-list { margin: 18px 0 4px 0; padding: 12px 16px; background: var(--ill-mist); border-radius: 8px; break-inside: avoid; }
+.ref-list .ref-title { font-size: 10px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; color: var(--ill-gray-600); margin-bottom: 6px; }
+.ref-list ol { margin: 0 0 0 18px; padding: 0; }
+.ref-list li { font-size: 10.5px; line-height: 1.55; color: var(--ill-gray-600); margin-bottom: 3px; }
+.ref-list li a { color: var(--ill-orange-deep); text-decoration: none; word-break: break-all; }
+sup.ref { font-size: 9px; color: var(--ill-orange-deep); font-weight: 700; }
+
+/* ---------- Disclaimer (end matter) ---------- */
+.disclaimer { padding: 20px 60px 10px 60px; border-top: 1px solid var(--ill-line); font-size: 10px; line-height: 1.6; color: var(--ill-gray-600); }
+.disclaimer .disclaimer-title { font-size: 9.5px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 6px; color: var(--ill-gray-600); }
+.disclaimer p { font-size: 10px; color: var(--ill-gray-600); margin-bottom: 6px; }
+
+/* ---------- Footer ---------- */
+.content-footer { padding: 20px 60px; display: flex; justify-content: space-between; font-size: 10px; color: var(--ill-gray-300); border-top: 1px solid var(--ill-line); }
+
+/* ---------- Closing CTA (pixel accent, replaces old skew shapes) ---------- */
+.cta-box { margin-top: 28px; padding: 22px 20px; background: var(--ill-slate); border-radius: 10px; text-align: center; position: relative; overflow: hidden; break-inside: avoid; }
+.cta-box .px-accent { position: absolute; top: 14px; right: 18px; width: 34px; height: 34px; }
+.cta-box p.cta-sub { color: rgba(255,255,255,0.65); font-size: 12px; margin-bottom: 4px; }
+.cta-box p.cta-main { color: #fff; font-weight: 700; font-size: 14px; margin-bottom: 0; }
+
+/* ============================================================
+ * TABLE OF CONTENTS (screen + print)
+ * ============================================================ */
+.toc { padding: 36px 60px; background: var(--ill-paper); }
+.toc h2 { margin-bottom: 20px; }
+.toc-list { list-style: none; padding: 0; margin: 0; counter-reset: toc-num; }
+.toc-list li { counter-increment: toc-num; margin: 0; padding: 0; border-bottom: 1px dashed var(--ill-line); }
+.toc-list li a { display: flex; align-items: baseline; text-decoration: none; color: var(--ill-slate); padding: 11px 0; font-size: 13.5px; font-weight: 500; }
+.toc-list li a::before { content: counter(toc-num, decimal-leading-zero); color: var(--ill-orange); font-weight: 700; font-family: var(--font-mono); font-size: 12px; margin-right: 14px; flex-shrink: 0; }
+.toc-list li a .toc-title { flex: 1; }
+.toc-list li a .toc-dots { flex: 0 1 auto; color: var(--ill-line); margin: 0 8px; overflow: hidden; white-space: nowrap; letter-spacing: 2px; }
+.toc-list li a::after { content: "\2022"; font-family: var(--font-mono); font-size: 12px; color: var(--ill-gray-600); font-weight: 600; flex-shrink: 0; min-width: 28px; text-align: right; }
+
+/* ============================================================
+ * PRINT — WeasyPrint (CSS Paged Media)
+ * ============================================================ */
+@media print {
+    @page {
+        size: A4 portrait;
+        margin: 60px 0 50px 0;
+        @top-left {
+            content: element(running-header);
+            width: 100%;
+        }
+        @bottom-right {
+            content: counter(page);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 10px;
+            font-weight: 500;
+            color: #989A9B;
+            padding: 0 50px 18px 0;
+        }
+        @bottom-left {
+            /* Set per document in <style id="doc-overrides"> —
+               new_report.py injects the real title there. */
+            content: "";
+            font-family: 'Montserrat', sans-serif;
+            font-size: 9px;
+            color: #C1C3C3;
+            padding: 0 0 18px 50px;
+        }
+    }
+    @page cover-page {
+        margin: 0;
+        @top-left { content: none; }
+        @bottom-right { content: none; }
+        @bottom-left { content: none; }
+    }
+    @page toc-page {
+        @bottom-right { content: none; }
+        @bottom-left { content: none; }
+    }
+
+    html, body {
+        background: var(--ill-paper);
+        font-size: 12px;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .cover {
+        page: cover-page;
+        width: 210mm;
+        height: 297mm;
+        page-break-after: always;
+        position: relative;
+        overflow: hidden;
+    }
+    .cover-art { width: 56mm; }
+    .cover-content { left: 17mm; width: 128mm; }
+    .cover-logo { margin-top: 20mm; }
+    .cover-logo img { height: 11mm; }
+    .cover-spacer { flex: none; height: 58mm; }
+    .cover h1 { font-size: 31pt; margin-bottom: 11mm; }
+    .cover .subtitle { font-size: 13.5pt; margin-bottom: 9mm; max-width: 118mm; }
+    .cover-byline { font-size: 10.5pt; margin-bottom: 2mm; }
+    .cover-date { font-size: 10.5pt; }
+    .cover-disclaimer { font-size: 8pt; margin-top: 14mm; max-width: 112mm; }
+    .cover-footer { left: 17mm; right: 62mm; bottom: 10mm; font-size: 7.5pt; }
+
+    .section-header {
+        position: running(running-header);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 50px 8px 50px;
+        border-top: 3px solid var(--ill-orange);
+        border-bottom: 1px solid var(--ill-line);
+        background: var(--ill-paper);
+        margin: 0;
+    }
+
+    .content-wrap {
+        max-width: 100%;
+        padding: 0;
+        background: var(--ill-paper);
+    }
+    .content-wrap::before { display: none; }
+
+    .section {
+        break-before: page;
+        padding: 20px 50px 30px 50px;
+        border-bottom: none;
+    }
+    .section:first-child { break-before: auto; }
+    /* Short-section flow overrides belong in doc-overrides:
+       .section:nth-child(N) { break-before: auto; } */
+
+    h2, h3, h4 { break-after: avoid; }
+    p, li { orphans: 3; widows: 3; }
+
+    .phase-spacer { display: none; }
+    .phase-banner { break-after: avoid; break-inside: avoid; margin-top: 24px; padding-top: 10px; }
+    .phase-banner:first-child { margin-top: 0; }
+
+    .step, .callout, .diagram-container, table, .checklist li, .ref-list { break-inside: avoid; }
+
+    /* <pre> is atomic — long code must use .code-multipart */
+    pre { break-inside: avoid; font-size: 10px; padding: 12px 16px; orphans: 4; widows: 4; }
+    .code-multipart { break-inside: auto; margin: 14px 0; }
+    .code-multipart > pre { break-inside: avoid; margin: 0; border-radius: 0; }
+    .code-multipart > pre:first-child { border-radius: 8px 8px 0 0; }
+    .code-multipart > pre:last-child { border-radius: 0 0 8px 8px; }
+    .code-multipart > pre:not(:last-child) { border-bottom: 1px dashed #325158; padding-bottom: 10px; }
+    .code-multipart > pre:not(:first-child) { padding-top: 10px; }
+
+    .phase-banner + .step,
+    .phase-banner + pre,
+    .phase-banner + .code-multipart,
+    .phase-banner + p { break-before: avoid; }
+
+    .step { padding-top: 14px; margin-top: 0; }
+    .callout { margin-top: 16px; }
+    .checklist li { padding-top: 10px; }
+    h3 { padding-top: 18px; }
+    table { margin-top: 16px; }
+    .diagram-container { margin-top: 16px; }
+
+    .copy-btn { display: none; }
+    pre.has-copy { padding-right: 16px; }
+    pre.has-copy .label { right: 10px; }
+
+    .disclaimer { padding: 16px 50px 6px 50px; break-inside: avoid; }
+    .content-footer { padding: 16px 50px; }
+
+    .toc { page: toc-page; break-after: page; }
+    .toc-list li a::after { content: target-counter(attr(href), page); }
+}

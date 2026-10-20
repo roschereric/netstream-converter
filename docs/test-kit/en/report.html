@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<!-- ================================================================
+     ILLUMIO BRANDED REPORT — generated from the illumio-branded-reports skill.
+     DO NOT hand-write or re-type this skeleton, the CSS, or the logos.
+     * Scaffold every new report with:  python <skill>/scripts/new_report.py
+     * Edit ONLY the region between the SECTIONS START / SECTIONS END markers
+       (plus the doc-overrides style block for per-document print tweaks).
+     * styles/report.css and assets/copy.js are canonical and hash-checked —
+       never edit or inline them.
+     * Before rendering:  python <skill>/scripts/check_brand.py <this file>
+     ================================================================ -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>nsconv Test Kit</title>
+<link rel="stylesheet" href="styles/report.css">
+<script src="assets/copy.js" defer></script>
+<style id="doc-overrides">
+/* Per-document print overrides ONLY (max ~40 lines; checked by check_brand.py).
+   Typical use: short-section flow, e.g. .section:nth-child(3){break-before:auto} */
+@media print {
+  #sec-matrix th, #sec-matrix td { font-size: 8.5pt; padding: 5px 6px; }
+  #sec-matrix tr { break-inside: avoid; }
+  @page { @bottom-left { content: "nsconv Test Kit"; } }
+}
+</style>
+</head>
+<body>
+
+<!-- ==================== COVER ==================== -->
+<div class="cover ">
+  
+  <div class="cover-content">
+    <div class="cover-logo">
+      <img src="assets/logo-white.png" alt="Illumio">
+    </div>
+    <div class="cover-spacer"></div>
+    <h1>nsconv Test Kit</h1>
+    <p class="subtitle">Test release 0.1.0-rc1 end to end: simulated NetStream, FlowLink and a test PCE, with an evidence bundle.</p>
+    <p class="cover-byline">Eric Roscher – Illumio Pre-Sales, LATAM</p>
+    <p class="cover-date">October 2026</p>
+    <p class="cover-disclaimer">Working guide prepared by Eric Roscher – Illumio Pre-Sales, LATAM — not an official Illumio, Inc. publication.</p>
+    <div class="cover-bottom-spacer"></div>
+  </div>
+  <div class="cover-footer">
+    <span>&copy; 2026 Illumio, Inc. All Rights Reserved.</span>
+    <span></span>
+  </div>
+</div>
+
+<!-- ==================== CONTENT ==================== -->
+<div class="content-wrap">
+
+<!-- ===== SECTIONS START (edit below this line ONLY) ===== -->
+
+<div class="section" id="sec-overview">
+  <div class="section-header">
+    <img src="assets/logo-dark.png" alt="Illumio">
+    <span class="section-label">Overview</span>
+  </div>
+  <h2>Overview</h2>
+  <p>nsconv receives Huawei NetStream (NetFlow v5, v9 and IPFIX with Huawei specifics) and re-exports clean IPFIX, NetFlow v9 or NetFlow v5 to Illumio FlowLink. This kit tests the test release <strong>0.1.0-rc1</strong> end to end in a lab: a replay host plays recorded or generated NetStream, nsconv converts it, FlowLink sends the flows to a <strong>test PCE</strong>, and you send back one evidence file per host. No Huawei switch and no production PCE are needed.</p>
+
+  <div class="diagram-container">
+    <div class="diagram-title">Test lab and data flows (all names and addresses are examples)</div>
+    <svg viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg" font-family="Montserrat, sans-serif">
+      <rect x="10" y="40" width="135" height="130" rx="8" fill="#F7F4EE" stroke="#313638" stroke-width="2"/>
+      <text x="77" y="66" text-anchor="middle" font-weight="700" font-size="13" fill="#313638">Replay host</text>
+      <text x="77" y="86" text-anchor="middle" font-size="10" fill="#555">stands in for the</text>
+      <text x="77" y="100" text-anchor="middle" font-size="10" fill="#555">Huawei switch</text>
+      <text x="77" y="122" text-anchor="middle" font-size="10" fill="#555">Example: 192.0.2.20</text>
+      <text x="77" y="142" text-anchor="middle" font-size="10" fill="#FF5500" font-weight="600">sends as switch</text>
+      <text x="77" y="156" text-anchor="middle" font-size="10" fill="#FF5500" font-weight="600">198.51.100.21:40000</text>
+
+      <rect x="195" y="40" width="135" height="130" rx="8" fill="#F7F4EE" stroke="#313638" stroke-width="2"/>
+      <text x="262" y="66" text-anchor="middle" font-weight="700" font-size="13" fill="#313638">nsconv host</text>
+      <text x="262" y="86" text-anchor="middle" font-size="10" fill="#555">RHEL / Rocky 8</text>
+      <text x="262" y="100" text-anchor="middle" font-size="10" fill="#555">Example: 192.0.2.10</text>
+      <text x="262" y="122" text-anchor="middle" font-size="10" fill="#555">input "huawei"</text>
+      <text x="262" y="136" text-anchor="middle" font-size="10" fill="#555">UDP 9996</text>
+
+      <rect x="380" y="40" width="135" height="130" rx="8" fill="#F7F4EE" stroke="#313638" stroke-width="2"/>
+      <text x="447" y="66" text-anchor="middle" font-weight="700" font-size="13" fill="#313638">FlowLink</text>
+      <text x="447" y="86" text-anchor="middle" font-size="10" fill="#555">same host: 127.0.0.1</text>
+      <text x="447" y="100" text-anchor="middle" font-size="10" fill="#555">or separate host</text>
+      <text x="447" y="114" text-anchor="middle" font-size="10" fill="#555">Example: 192.0.2.11</text>
+      <text x="447" y="136" text-anchor="middle" font-size="10" fill="#555">ipfix UDP 4739</text>
+      <text x="447" y="150" text-anchor="middle" font-size="10" fill="#555">netflow UDP 2055</text>
+
+      <rect x="565" y="40" width="125" height="130" rx="8" fill="none" stroke="#FF5500" stroke-width="2" stroke-dasharray="6,3"/>
+      <text x="627" y="80" text-anchor="middle" font-weight="700" font-size="13" fill="#313638">Test PCE</text>
+      <text x="627" y="100" text-anchor="middle" font-size="10" fill="#555">SaaS</text>
+      <text x="627" y="122" text-anchor="middle" font-size="10" fill="#555">not the production</text>
+      <text x="627" y="136" text-anchor="middle" font-size="10" fill="#555">PCE</text>
+
+      <line x1="145" y1="105" x2="187" y2="105" stroke="#313638" stroke-width="1.5"/>
+      <polygon points="185,101 195,105 185,109" fill="#313638"/>
+      <circle cx="168" cy="105" r="10" fill="#FF5500"/>
+      <text x="168" y="109" text-anchor="middle" font-size="11" fill="white" font-weight="700">1</text>
+      <line x1="330" y1="105" x2="372" y2="105" stroke="#313638" stroke-width="1.5"/>
+      <polygon points="370,101 380,105 370,109" fill="#313638"/>
+      <circle cx="353" cy="105" r="10" fill="#FF5500"/>
+      <text x="353" y="109" text-anchor="middle" font-size="11" fill="white" font-weight="700">2</text>
+      <line x1="515" y1="105" x2="557" y2="105" stroke="#313638" stroke-width="1.5"/>
+      <polygon points="555,101 565,105 555,109" fill="#313638"/>
+      <circle cx="538" cy="105" r="10" fill="#FF5500"/>
+      <text x="538" y="109" text-anchor="middle" font-size="11" fill="white" font-weight="700">3</text>
+
+      <rect x="195" y="220" width="320" height="56" rx="8" fill="#313638"/>
+      <text x="355" y="243" text-anchor="middle" font-size="11" fill="white" font-weight="700">nsconv-collect-evidence.sh</text>
+      <text x="355" y="262" text-anchor="middle" font-size="10" fill="white">captures 1 and 2, status, logs, FlowLink log → .tgz</text>
+      <line x1="262" y1="170" x2="262" y2="212" stroke="#313638" stroke-width="1.5" stroke-dasharray="6,4"/>
+      <polygon points="258,210 262,220 266,210" fill="#313638"/>
+      <line x1="447" y1="170" x2="447" y2="212" stroke="#313638" stroke-width="1.5" stroke-dasharray="6,4"/>
+      <polygon points="443,210 447,220 451,210" fill="#313638"/>
+      <line x1="515" y1="248" x2="557" y2="248" stroke="#313638" stroke-width="1.5" stroke-dasharray="6,4"/>
+      <polygon points="555,244 565,248 555,252" fill="#313638"/>
+      <text x="627" y="244" text-anchor="middle" font-size="10" fill="#313638" font-weight="700">.tgz to your</text>
+      <text x="627" y="258" text-anchor="middle" font-size="10" fill="#313638" font-weight="700">Illumio contact</text>
+    </svg>
+  </div>
+  <table>
+    <tr><th style="width:6%">#</th><th style="width:30%">Flow</th><th>Content</th></tr>
+    <tr><td>1</td><td>Replay host → nsconv, UDP 9996</td><td>NetStream v5, v9 or IPFIX, source <code>198.51.100.21:40000</code> (the example switch; 40000 is Huawei's default export source port<sup class="ref">1</sup>).</td></tr>
+    <tr><td>2</td><td>nsconv → FlowLink, UDP 4739 (IPFIX) or 2055 (v9/v5)</td><td>Clean records. With <code>source_address = "exporter"</code> (default) each datagram keeps the switch IP and port as its source, so FlowLink sees the switches themselves.</td></tr>
+    <tr><td>3</td><td>FlowLink → test PCE, HTTPS</td><td>Aggregated flow summaries, every <code>aggregation_minutes</code> (default 10, minimum 5)<sup class="ref">2</sup>.</td></tr>
+  </table>
+
+  <h3>What you need</h3>
+  <ul>
+    <li><strong>nsconv host</strong>: RHEL, Rocky or Alma Linux 8 x86_64 (9 also works), root access, <code>tcpdump</code>.</li>
+    <li><strong>Replay host</strong>: any Linux VM on the <strong>same Layer 2 segment</strong> as the nsconv host, with Python 3 and <code>tcpreplay</code> (EPEL 8 and 9 ship tcpreplay 4.6.1<sup class="ref">3</sup>).</li>
+    <li><strong>FlowLink 2.0.1</strong> on the nsconv host or on a separate host of the same segment, paired with a <strong>test PCE</strong> (an API key of that PCE).</li>
+    <li>The three kit files: this guide, <a href="../nsconv-sample-pcap.py">nsconv-sample-pcap.py</a> (writes Huawei-style NetStream test captures with synthetic data) and <a href="../nsconv-collect-evidence.sh">nsconv-collect-evidence.sh</a> (collects the evidence).</li>
+  </ul>
+  <div class="ref-list">
+    <div class="ref-title">Sources</div>
+    <ol>
+      <li><a href="https://netconfcentral.org/modules/huawei-netstream/2019-06-27">[official-Huawei, YANG] huawei-netstream module, source-ipv4-port default 40000 — netconfcentral.org/modules/huawei-netstream/2019-06-27</a></li>
+      <li><a href="https://product-docs-repo.illumio.com/Tech-Docs/Core/26.1/Install-Upgrade-Admin/out/en/flowlink-2-0-0-configuration-and-usage/configure-flowlink.html">[official-Illumio] Configure Flowlink — product-docs-repo.illumio.com/Tech-Docs/Core/26.1/Install-Upgrade-Admin/out/en/flowlink-2-0-0-configuration-and-usage/configure-flowlink.html</a></li>
+      <li><a href="https://packages.fedoraproject.org/pkgs/tcpreplay/tcpreplay/">[official-Fedora] tcpreplay package (EPEL 8, EPEL 9) — packages.fedoraproject.org/pkgs/tcpreplay/tcpreplay/</a></li>
+    </ol>
+  </div>
+</div>
+
+<div class="section" id="sec-install">
+  <div class="section-header">
+    <img src="assets/logo-dark.png" alt="Illumio">
+    <span class="section-label">Install</span>
+  </div>
+  <h2>Install and configure the lab</h2>
+  <div class="phase-banner">
+    <span class="phase-num">STEP 1</span>
+    <span class="phase-title">Install nsconv 0.1.0-rc1 on the nsconv host</span>
+  </div>
+  <p>Download the RPM and <code>SHA256SUMS</code> from the <code>releases/0.1.0-rc1/</code> folder of <a href="https://github.com/roschereric/netstream-converter">github.com/roschereric/netstream-converter</a>, check them, and install. The RPM version is <code>0.1.0~rc1</code> (RPM cannot use “-” in a version; the final 0.1.0 upgrades it).</p>
+<pre><span class="label">NSCONV HOST</span>
+<span class="comment"># Download (or save both files from the folder in a browser)</span>
+<span class="cmdlet">BASE</span>=https://github.com/roschereric/netstream-converter/raw/main/releases/0.1.0-rc1
+<span class="cmdlet">curl</span> <span class="param">-LO</span> $BASE/nsconv-0.1.0~rc1-1.x86_64.rpm <span class="param">-LO</span> $BASE/SHA256SUMS
+<span class="cmdlet">sha256sum</span> <span class="param">-c --ignore-missing</span> SHA256SUMS      <span class="comment"># must print: nsconv-0.1.0~rc1-1.x86_64.rpm: OK</span>
+<span class="cmdlet">sudo dnf install</span> ./nsconv-0.1.0~rc1-1.x86_64.rpm
+<span class="cmdlet">nsconvctl</span> version
+</pre>
+  <p>The RPM installs <code>/usr/bin/nsconvctl</code>, the unit <code>nsconv.service</code> (user <code>nsconv</code>, only capability <code>CAP_NET_RAW</code>), the config <code>/etc/nsconv/nsconv.toml</code> and a sysctl file that raises <code>net.core.rmem_max</code> to 8 MiB when it is lower. The service is not started yet.</p>
+
+  <div class="phase-banner">
+    <span class="phase-num">STEP 2</span>
+    <span class="phase-title">Minimal nsconv configuration for the lab</span>
+  </div>
+  <p>The defaults already fit the lab: input <code>huawei</code> on UDP 9996, one IPFIX output to <code>127.0.0.1:4739</code> sent from the switch address (<code>source_address = "exporter"</code>). Only the allow-list must be set: it is empty by default, so everything is dropped. <code>nsconvctl config set</code> keeps the comments, validates, writes and reloads.</p>
+<pre><span class="label">NSCONV HOST</span>
+<span class="comment"># Allow the example switches (the replay host sends with these source IPs)</span>
+<span class="cmdlet">sudo nsconvctl config set</span> input.huawei.allow '["198.51.100.0/24"]'
+<span class="comment"># FlowLink on a separate host: point the output at it (example 192.0.2.11)</span>
+<span class="cmdlet">sudo nsconvctl config set</span> output.flowlink.target 192.0.2.11:4739
+<span class="comment"># Open the input port to the replay host, start the service</span>
+<span class="cmdlet">sudo firewall-cmd</span> <span class="param">--permanent --add-port</span>=9996/udp &amp;&amp; <span class="cmdlet">sudo firewall-cmd</span> <span class="param">--reload</span>
+<span class="cmdlet">sudo systemctl enable --now</span> nsconv
+<span class="cmdlet">sudo nsconvctl status</span>
+</pre>
+  <div class="callout callout-info">
+    <div class="callout-label">exporter or local</div>
+    <strong>exporter</strong> (default): FlowLink sees each switch IP, so its <code>remote_addrs</code> lists the switch IPs, exactly as if the switches sent to FlowLink directly. FlowLink must be on the nsconv host or on the same Layer 2 segment. <strong>local</strong>: nsconv sends from its own address; <code>remote_addrs</code> is <code>127.0.0.1</code> (same host) or the nsconv host IP. Switch with <code>sudo nsconvctl config set output.flowlink.source_address local</code>.
+  </div>
+
+  <div class="phase-banner">
+    <span class="phase-num">STEP 3</span>
+    <span class="phase-title">FlowLink against the test PCE</span>
+  </div>
+  <p>Install FlowLink 2.0.1 as described in the FlowLink guide, store the <strong>test PCE</strong> API key and secret in <code>/etc/illumio-flowlink/api_info</code><sup class="ref">1</sup>, and use one consumer per protocol. FlowLink has no default ports and listens on the ports you configure<sup class="ref">2</sup>. Never reuse a FlowLink port for the nsconv input.</p>
+<pre><span class="label">/etc/illumio-flowlink/config.yaml (FLOWLINK HOST)</span>
+pce_addr: test-pce.example.com:443          <span class="comment"># example: your TEST PCE</span>
+org_id: 1                                   <span class="comment"># example: org of the test PCE (SaaS)</span>
+api_key: $cat /etc/illumio-flowlink/api_info
+data_directory: /var/lib/illumio-flowlink/data
+aggregation_minutes: 5                      <span class="comment"># minimum: flows reach the PCE sooner</span>
+consumers:
+  - name: nsconv-ipfix                      <span class="comment"># nsconv output protocol = "ipfix"</span>
+    parser:
+      type: ipfix
+    connectors:
+      - type: udp
+        properties:
+          ports: '4739'
+          remote_addrs: ['198.51.100.21', '198.51.100.22']   <span class="comment"># exporter mode: the switch IPs</span>
+  - name: nsconv-netflow                    <span class="comment"># protocol = "netflow9" or "netflow5"</span>
+    parser:
+      type: netflow
+    connectors:
+      - type: udp
+        properties:
+          ports: '2055'
+          remote_addrs: ['198.51.100.21', '198.51.100.22']
+</pre>
+<pre><span class="label">FLOWLINK HOST</span>
+<span class="cmdlet">sudo systemctl restart</span> illumio-flowlink
+<span class="cmdlet">sudo -u</span> ilo-flowlink /usr/local/bin/illumio-flowlink-ctl status
+<span class="cmdlet">ss</span> <span class="param">-lunp</span> | grep flowlink                  <span class="comment"># 4739 and 2055 listening</span>
+<span class="comment"># Separate FlowLink host only: open its ports to the nsconv host</span>
+<span class="cmdlet">sudo firewall-cmd</span> <span class="param">--permanent --add-port</span>=4739/udp <span class="param">--add-port</span>=2055/udp &amp;&amp; <span class="cmdlet">sudo firewall-cmd</span> <span class="param">--reload</span>
+</pre>
+  <p><code>remote_addrs</code> takes single IPs, not CIDRs<sup class="ref">2</sup>. With <code>source_address = "local"</code> use <code>'127.0.0.1'</code> (same host) or the nsconv host IP (example <code>'192.0.2.10'</code>). In the PCE, flow IPs show in Illumination only when they belong to workloads<sup class="ref">3</sup>: if the example workload IPs do not appear, create unmanaged workloads for a few of them in the test PCE.</p>
+  <div class="ref-list">
+    <div class="ref-title">Sources</div>
+    <ol>
+      <li><a href="https://product-docs-repo.illumio.com/Tech-Docs/Core/26.1/Install-Upgrade-Admin/out/en/flowlink-2-0-0-configuration-and-usage/configure-flowlink/deploy-flowlink-as-a-linux-service.html">[official-Illumio] Deploy Flowlink as a Linux service — product-docs-repo.illumio.com/…/configure-flowlink/deploy-flowlink-as-a-linux-service.html</a></li>
+      <li><a href="https://product-docs-repo.illumio.com/Tech-Docs/Core/26.1/Install-Upgrade-Admin/out/en/flowlink-2-0-0-configuration-and-usage/configure-flowlink/ingested-flow-examples.html">[official-Illumio] Ingested flow examples (consumers, ports, remote_addrs) — product-docs-repo.illumio.com/…/configure-flowlink/ingested-flow-examples.html</a></li>
+      <li><a href="https://product-docs-repo.illumio.com/Tech-Docs/Core/26.1/Install-Upgrade-Admin/out/en/flowlink-2-0-0-configuration-and-usage/overview/scale-and-limitations.html">[official-Illumio] Scale and limitations — product-docs-repo.illumio.com/…/overview/scale-and-limitations.html</a></li>
+    </ol>
+  </div>
+</div>
+
+<div class="section" id="sec-debug">
+  <div class="section-header">
+    <img src="assets/logo-dark.png" alt="Illumio">
+    <span class="section-label">Debug Mode</span>
+  </div>
+  <h2>Debug mode and where to look</h2>
+  <h3>nsconv</h3>
+  <p>The log level is the config key <code>log.level</code> (<code>error</code>, <code>warn</code>, <code>info</code>, <code>debug</code>); there is no separate flag. Changing it reloads the daemon without a restart. At <code>debug</code>, every dropped, clamped or defaulted datagram or flow logs one line per event kind, at most 5 lines per 10 s per event and exporter and 2000 lines per 10 s in total (“N similar suppressed”).</p>
+<pre><span class="label">NSCONV HOST</span>
+<span class="cmdlet">sudo nsconvctl config set</span> log.level debug      <span class="comment"># back with: ... log.level info</span>
+<span class="cmdlet">nsconvctl logs</span> <span class="param">-f</span>                             <span class="comment"># follow the journal of nsconv</span>
+<span class="cmdlet">nsconvctl logs</span> <span class="param">--since</span> 30m                     <span class="comment"># or "2026-10-21 14:00"</span>
+<span class="cmdlet">sudo nsconvctl logs</span> <span class="param">--recent</span> 200               <span class="comment"># the daemon's in-memory ring</span>
+<span class="cmdlet">journalctl</span> <span class="param">-u</span> nsconv NSCONV_EXPORTER=198.51.100.21:40000 <span class="param">-o</span> verbose   <span class="comment"># one switch</span>
+<span class="cmdlet">sudo nsconvctl status</span> <span class="param">--detail</span>                 <span class="comment"># health, alerts, exporters, outputs, counters</span>
+<span class="cmdlet">sudo nsconvctl status</span> <span class="param">--exporter</span> 198.51.100.21  <span class="comment"># one switch: sampling, skew, sequence loss</span>
+<span class="cmdlet">sudo nsconvctl</span> <span class="param">--json</span> status <span class="param">--detail</span>          <span class="comment"># the same as JSON (accounting.unaccounted must be 0)</span>
+<span class="cmdlet">sudo nsconvctl tui</span>                             <span class="comment"># full-screen view, Alerts tab; --lang es</span>
+</pre>
+  <p>Warnings have stable ids (<code>sampling-default</code>, <code>restamped</code>, <code>no-template</code>, <code>seq-gap</code>, <code>collector-down</code>, …). Silence one with <code>sudo nsconvctl dismiss &lt;id&gt;</code>; it returns if its value doubles.</p>
+
+  <h3>Debug collector and raw captures</h3>
+  <p><code>nsconvctl decode --listen</code> is a small collector that prints every flow it receives. Use it on a port that FlowLink does not use (example 9997).</p>
+<pre><span class="label">NSCONV HOST</span>
+<span class="comment"># a) What the replay host sends, before nsconv: replay to port 9997 instead of 9996</span>
+<span class="cmdlet">nsconvctl decode</span> <span class="param">--listen</span> 0.0.0.0:9997
+<span class="comment"># b) What nsconv sends: add a second output to /etc/nsconv/nsconv.toml, then: sudo nsconvctl reload</span>
+<span class="comment">#    [[output]]</span>
+<span class="comment">#    name = "debug"</span>
+<span class="comment">#    protocol = "ipfix"</span>
+<span class="comment">#    target = "127.0.0.1:9997"</span>
+<span class="comment">#    source_address = "local"</span>
+<span class="cmdlet">nsconvctl decode</span> <span class="param">--listen</span> 127.0.0.1:9997 <span class="param">--count</span> 50
+<span class="comment"># c) Raw NetStream datagrams of one switch into a pcap (runs tcpdump, default 60 s / 2000 datagrams)</span>
+<span class="cmdlet">sudo nsconvctl debug-capture</span> 198.51.100.21 <span class="param">--secs</span> 120
+<span class="comment"># d) Decode any capture offline</span>
+<span class="cmdlet">nsconvctl decode</span> nsconv-capture-198.51.100.21-*.pcap
+</pre>
+
+  <h3>FlowLink</h3>
+  <p>FlowLink logs to <code>/var/log/illumio-flowlink/</code>. For verbose output, stop the service and start it in verbose mode as <code>ilo-flowlink</code><sup class="ref">1</sup>; debug output shows incoming records, the IP, port and protocol of each record, every aggregation and upload, and the PCE response code<sup class="ref">2</sup>. Use it only during the test, then return to the service.</p>
+<pre><span class="label">FLOWLINK HOST</span>
+<span class="cmdlet">sudo -u</span> ilo-flowlink /usr/local/bin/illumio-flowlink-ctl stop
+<span class="cmdlet">sudo -u</span> ilo-flowlink /usr/local/bin/illumio-flowlink-ctl start <span class="param">-v</span>
+<span class="cmdlet">sudo tail</span> <span class="param">-f</span> /var/log/illumio-flowlink/flowlink.log
+<span class="comment"># after the test</span>
+<span class="cmdlet">sudo -u</span> ilo-flowlink /usr/local/bin/illumio-flowlink-ctl stop &amp;&amp; <span class="cmdlet">sudo systemctl start</span> illumio-flowlink
+</pre>
+  <div class="ref-list">
+    <div class="ref-title">Sources</div>
+    <ol>
+      <li><a href="https://product-docs-repo.illumio.com/Tech-Docs/Core/26.1/Install-Upgrade-Admin/out/en/flowlink-2-0-0-configuration-and-usage/configure-flowlink/deploy-flowlink-as-a-linux-service.html">[official-Illumio] Deploy Flowlink as a Linux service (log directory, start -v) — product-docs-repo.illumio.com/…/deploy-flowlink-as-a-linux-service.html</a></li>
+      <li><a href="https://product-docs-repo.illumio.com/Tech-Docs/Core/26.1/Install-Upgrade-Admin/out/en/flowlink-2-0-0-configuration-and-usage/flowlink-usage/troubleshooting.html">[official-Illumio] Flowlink troubleshooting (debug output) — product-docs-repo.illumio.com/…/flowlink-usage/troubleshooting.html</a></li>
+      <li><a href="https://www.freedesktop.org/software/systemd/man/latest/journalctl.html">[official-systemd] journalctl(1), field matches — freedesktop.org/software/systemd/man/latest/journalctl.html</a></li>
+    </ol>
+  </div>
+</div>
+
+<div class="section" id="sec-simulate">
+  <div class="section-header">
+    <img src="assets/logo-dark.png" alt="Illumio">
+    <span class="section-label">Simulate NetStream</span>
+  </div>
+  <h2>Simulate NetStream</h2>
+  <h3>Generate a test capture</h3>
+  <p><code>nsconv-sample-pcap.py</code> writes a pcap of Huawei-style NetStream datagrams: NetFlow v5 (48-byte records), v9 (Huawei original-flow template layout, with the Huawei private field 232) or IPFIX (relative times plus IE 160 in every record, Huawei enterprise fields), UDP source port 40000, templates in their own datagrams before the data and repeated every 10 data datagrams. It needs only Python 3.6 or later (RHEL 8: <code>/usr/libexec/platform-python</code>). All values are synthetic.</p>
+<pre><span class="label">REPLAY HOST</span>
+<span class="cmdlet">curl</span> <span class="param">-LO</span> https://roschereric.github.io/netstream-converter/test-kit/nsconv-sample-pcap.py
+<span class="comment"># MAC of the nsconv host NIC (run on the nsconv host): ip -br link show &lt;nic&gt;</span>
+<span class="cmdlet">python3</span> nsconv-sample-pcap.py <span class="param">--version</span> 9 <span class="param">--switch</span> 198.51.100.21 <span class="param">--dst</span> 192.0.2.10 \
+    <span class="param">--dst-mac</span> 52:54:00:12:34:56 <span class="param">--flows</span> 200 <span class="param">--out</span> v9.pcap <span class="param">--expect</span> v9.expect.jsonl
+</pre>
+  <table>
+    <tr><th style="width:30%">Option</th><th>Meaning (default)</th></tr>
+    <tr><td><code>--version 5|9|ipfix</code></td><td>Export version (9).</td></tr>
+    <tr><td><code>--switch IP[,IP…]</code></td><td>Switch source address(es); each switch gets its own flows (198.51.100.21).</td></tr>
+    <tr><td><code>--sport</code> / <code>--dst</code> / <code>--dport</code></td><td>Switch source port (40000), nsconv host IP (192.0.2.10), nsconv input port (9996).</td></tr>
+    <tr><td><code>--dst-mac</code> / <code>--src-mac</code></td><td>Frame MACs. <code>--dst-mac</code> must be the nsconv NIC for tcpreplay.</td></tr>
+    <tr><td><code>--src</code> / <code>--dst-hosts</code> / <code>--dst-ports</code></td><td>Workload IPs or CIDRs and ports (10.1.1.0/24 → 10.2.2.0/24, ports 443,22,3306,8080,53; IPv6: 2001:db8:a::/112 → 2001:db8:b::/112).</td></tr>
+    <tr><td><code>--flows N</code> / <code>--ipv6</code></td><td>Flows per switch (200) / IPv6 workloads (v9 and IPFIX only).</td></tr>
+    <tr><td><code>--sampling N</code></td><td>1-in-N rate written as IE 34 in every v9/IPFIX record (0 = not reported, as many Huawei switches do).</td></tr>
+    <tr><td><code>--domain N</code></td><td>v9 Source ID / IPFIX Observation Domain / v5 engine id (0): a second value emulates a second line card.</td></tr>
+    <tr><td><code>--pps</code> / <code>--template-every</code> / <code>--data-only</code></td><td>Datagram rate in the pcap timestamps (100); template repeat (10); data without templates (restart test).</td></tr>
+    <tr><td><code>--expect FILE</code> / <code>--check</code></td><td>Write the generated flows as JSON lines / decode the pcap with <code>nsconvctl</code> and compare every flow.</td></tr>
+  </table>
+  <div class="callout callout-warning">
+    <div class="callout-label">Generate just before you replay</div>
+    Flow times are set at generation time (they end 1 to 30 s before it). A pcap replayed more than 5 minutes later is outside <code>convert.max_clock_skew_secs = 300</code>: nsconv then shifts the times to the receive time and counts <code>restamped</code>. Keep the clocks of all hosts synchronized (chrony).
+  </div>
+
+  <h3>Option A: <code>nsconvctl replay</code> (simple)</h3>
+  <p>Sends the NetStream payloads of a capture with a normal UDP socket. It never spoofs: nsconv and FlowLink see the <strong>replay host</strong> address (example 192.0.2.20) and an ephemeral source port. Good for a first check; for the switch identity tests use option B.</p>
+<pre><span class="label">REPLAY HOST AND NSCONV HOST</span>
+<span class="comment"># nsconv host: allow the replay host; FlowLink remote_addrs then lists 192.0.2.20 (exporter mode)</span>
+<span class="cmdlet">sudo nsconvctl config set</span> input.huawei.allow '["198.51.100.0/24", "192.0.2.20"]'
+<span class="comment"># replay host: copy nsconvctl from the RPM or the release binary, then</span>
+<span class="cmdlet">nsconvctl replay</span> v9.pcap <span class="param">--to</span> 192.0.2.10:9996 <span class="param">--rate</span> 200
+</pre>
+
+  <h3>Option B: tcpreplay (keeps the switch source address)</h3>
+  <p>tcpreplay sends the frames exactly as they are in the pcap, so the datagrams arrive from <code>198.51.100.21:40000</code>: the allow-list, the per-switch view and <code>source_address = "exporter"</code> behave as with a real switch. The generator already writes the right destination; for any other capture (for example one taken with <code>debug-capture</code>, which is a Linux “cooked” capture) rewrite it first with tcprewrite.</p>
+<pre><span class="label">REPLAY HOST</span>
+<span class="cmdlet">sudo dnf install</span> epel-release &amp;&amp; <span class="cmdlet">sudo dnf install</span> tcpreplay   <span class="comment"># Rocky/Alma; RHEL: enable EPEL first</span>
+<span class="comment"># Only for captures not made by the generator: old collector IP (example 192.0.2.50) to the</span>
+<span class="comment"># nsconv host, its MAC, recalculated checksums. Add --dlt=enet for a cooked capture (debug-capture).</span>
+<span class="cmdlet">tcprewrite</span> <span class="param">--infile</span>=capture.pcap <span class="param">--outfile</span>=lab.pcap \
+    <span class="param">--enet-dmac</span>=52:54:00:12:34:56 <span class="param">--enet-smac</span>=02:00:00:00:00:01 \
+    <span class="param">--dstipmap</span>=192.0.2.50/32:192.0.2.10/32 <span class="param">--fixcsum</span>
+<span class="comment"># Replay on the NIC that faces the nsconv host</span>
+<span class="cmdlet">sudo tcpreplay</span> <span class="param">--intf1</span>=eth0 v9.pcap                         <span class="comment"># pcap timing (100 datagrams/s)</span>
+<span class="cmdlet">sudo tcpreplay</span> <span class="param">--intf1</span>=eth0 <span class="param">--pps</span>=2000 <span class="param">--loop</span>=30 burst.pcap   <span class="comment"># load test</span>
+</pre>
+  <table>
+    <tr><th style="width:34%">tcpreplay / tcprewrite option</th><th>Effect (official manual)</th></tr>
+    <tr><td><code>--intf1</code> (<code>-i</code>)</td><td>Output interface; required.</td></tr>
+    <tr><td><code>--pps</code> / <code>--mbps</code> / <code>--topspeed</code></td><td>Packets per second / Mbps / as fast as possible; default is the pcap timing.</td></tr>
+    <tr><td><code>--loop</code> / <code>--duration</code> / <code>--limit</code></td><td>Repeat the file N times / stop after N seconds / after N packets.</td></tr>
+    <tr><td><code>--dstipmap</code> (<code>-D</code>)</td><td>Pseudo-NAT of destination IPs, <code>CIDR:CIDR</code> pairs.</td></tr>
+    <tr><td><code>--enet-dmac</code> / <code>--enet-smac</code></td><td>Override destination / source MAC.</td></tr>
+    <tr><td><code>--dlt=enet</code></td><td>Convert a Linux cooked capture to Ethernet (needs both MACs).</td></tr>
+    <tr><td><code>--fixcsum</code> (<code>-C</code>)</td><td>Recalculate IPv4/TCP/UDP checksums.</td></tr>
+  </table>
+  <p>Do not use <code>--unique-ip</code>: it changes the IP header (the switch address), not the addresses inside the NetStream records.</p>
+
+  <div class="callout callout-critical">
+    <div class="callout-label">Replay from a separate host, never from the nsconv host</div>
+    tcpreplay writes frames straight to the NIC’s transmit side. The host’s own network stack never receives what it transmits, and the switch port does not send a frame back out of the port it came from, so a replay on the nsconv host itself never reaches nsconv. Use a second VM or host on the same Layer 2 segment (same VLAN, no router in between).
+  </div>
+  <h3>Network checks on the nsconv host</h3>
+  <ul>
+    <li><strong>Reverse-path filter</strong>: RHEL’s default <code>rp_filter = 1</code> (strict) drops a datagram whose source (198.51.100.21) would be routed back through a different interface. The default route through the receiving NIC passes. If the nsconv host has several NICs, add a route for the switch range through the receiving NIC, or set loose mode on it: <code>sudo sysctl -w net.ipv4.conf.&lt;nic&gt;.rp_filter=2</code>. Dropped datagrams show in <code>nstat -az TcpExtIPReversePathFilter</code>, not in nsconv.</li>
+    <li><strong>firewalld</strong>: UDP 9996 open on the zone of the receiving NIC (step 2).</li>
+    <li><strong>Allow-list</strong>: <code>input.huawei.allow</code> holds the switch range (option B) or the replay host IP (option A); others count as <code>denied</code>.</li>
+    <li><strong>Check arrival</strong>: <code>sudo tcpdump -ni any udp port 9996 -c 5</code>, then <code>sudo nsconvctl status</code>.</li>
+  </ul>
+  <div class="ref-list">
+    <div class="ref-title">Sources</div>
+    <ol>
+      <li><a href="https://tcpreplay.appneta.com/reference/man/tcpreplay/">[official-tcpreplay] tcpreplay(1) manual — tcpreplay.appneta.com/reference/man/tcpreplay/</a></li>
+      <li><a href="https://tcpreplay.appneta.com/reference/man/tcprewrite/">[official-tcpreplay] tcprewrite(1) manual — tcpreplay.appneta.com/reference/man/tcprewrite/</a></li>
+      <li><a href="https://tcpreplay.appneta.com/tools/tcprewrite/">[official-tcpreplay] tcprewrite overview (DLT conversion) — tcpreplay.appneta.com/tools/tcprewrite/</a></li>
+      <li><a href="https://docs.kernel.org/networking/ip-sysctl.html">[official-kernel] ip-sysctl: rp_filter 0/1/2 — docs.kernel.org/networking/ip-sysctl.html</a></li>
+      <li>[lab] Rocky 8.10 test VM, 2026-10-20: frames with a source outside the link’s routes were dropped by rp_filter (counter TcpExtIPReversePathFilter), and arrived once a route back through the receiving interface existed.</li>
+    </ol>
+  </div>
+</div>
+
+<div class="section" id="sec-matrix">
+  <div class="section-header">
+    <img src="assets/logo-dark.png" alt="Illumio">
+    <span class="section-label">Test Matrix</span>
+  </div>
+  <h2>What to test</h2>
+  <p>Run the evidence script (next section) around each test or group of tests and write the test numbers in <code>--note</code>. “Status” means <code>sudo nsconvctl status --detail</code>; “Explorer” means the test PCE’s Explorer, filtered by the example workload IPs. Flows reach the PCE after the FlowLink aggregation interval.</p>
+  <table>
+    <tr><th style="width:4%">#</th><th style="width:19%">Test</th><th style="width:28%">How</th><th style="width:31%">Expected</th><th style="width:18%">Where</th></tr>
+    <tr><td>1</td><td>Install and sandbox</td><td>Step 1–2; <code>systemd-analyze security nsconv</code></td><td>Service active; exposure “OK”; process user <code>nsconv</code> with only CAP_NET_RAW</td><td>Evidence: nsconv-security, nsconv-process</td></tr>
+    <tr><td>2</td><td>v9 IPv4 → IPFIX (baseline)</td><td>Generate <code>--version 9 --flows 200</code>, tcpreplay</td><td><code>flows_in</code> = <code>flows_out</code> = 200, <code>unaccounted</code> 0; FlowLink accepts 198.51.100.21; flows in Explorer</td><td>Status, FlowLink log, Explorer</td></tr>
+    <tr><td>3</td><td>v5 input</td><td><code>--version 5</code></td><td>Exporter shows v5; rate “default 1000” and alert <code>sampling-default</code> (the v5 header carries no rate, as in the Huawei captures we know)</td><td>Status, Explorer</td></tr>
+    <tr><td>4</td><td>IPFIX input</td><td><code>--version ipfix</code></td><td>Same flows; Huawei enterprise fields ignored: <code>malformed</code>, <code>template_rejects</code> 0</td><td>Status, Explorer</td></tr>
+    <tr><td>5</td><td>Output v9 and v5</td><td><code>config set output.flowlink.protocol netflow9</code> and <code>target …:2055</code>; then <code>netflow5</code></td><td>Flows in Explorer through the netflow consumer; v5 output counts IPv6 flows as <code>v6_on_v5</code> and does not send them</td><td>Status, FlowLink log, Explorer</td></tr>
+    <tr><td>6</td><td>Switch identity (exporter)</td><td><code>--switch 198.51.100.21,198.51.100.22</code>; then remove .22 from <code>remote_addrs</code></td><td>Both IPs accepted and listed by FlowLink; after the removal FlowLink discards .22 only</td><td>FlowLink log, Explorer</td></tr>
+    <tr><td>7</td><td>local mode</td><td><code>source_address local</code>, <code>remote_addrs</code> = <code>127.0.0.1</code> or the nsconv IP</td><td>Flows accepted; note how FlowLink’s log names a 127.0.0.1 exporter</td><td>FlowLink log</td></tr>
+    <tr><td>8</td><td>Two line cards, one IP</td><td>Two pcaps, same <code>--switch</code>, <code>--domain 1</code> / <code>--domain 2</code>, different <code>--src</code></td><td>Two sessions in nsconv; both workload sets in Explorer (FlowLink keeps the domains apart)</td><td>Status, Explorer</td></tr>
+    <tr><td>9</td><td>Sampling (IE 34)</td><td><code>--sampling 2048</code>; then <code>config set input.huawei.sampling_override '{ "198.51.100.21" = 1000 }'</code></td><td>Rate 2048 “reported”, then 1000 “override”, carried in every output record; note whether the PCE scales counts</td><td>Status, output pcap, Explorer</td></tr>
+    <tr><td>10</td><td>Bytes (IE 1 and 85)</td><td><code>--flows 1 --expect one.jsonl</code></td><td>Explorer shows the byte count of <code>one.jsonl</code></td><td>Explorer</td></tr>
+    <tr><td>11</td><td>IPv6</td><td><code>--ipv6</code> with v9 and with IPFIX</td><td>IPv6 flows decoded and forwarded; note whether they show in Explorer</td><td>Status, Explorer</td></tr>
+    <tr><td>12</td><td>Time buckets</td><td>Generate and replay at once; note the UTC time</td><td>Flows in the interval of the replay time; <code>restamped</code> 0</td><td>Explorer, status</td></tr>
+    <tr><td>13</td><td>Clock skew</td><td>Replay a pcap generated over 10 min earlier</td><td><code>restamped</code> grows, alert <code>restamped</code>; flows dated at receive time</td><td>Status, Explorer</td></tr>
+    <tr><td>14</td><td>Reload</td><td><code>config set log.level debug</code>, then <code>info</code></td><td>Same PID, “reload” in the log, flows continue</td><td>Logs, status</td></tr>
+    <tr><td>15</td><td>Restart, templates kept</td><td>Replay v9; <code>systemctl restart nsconv</code>; replay a <code>--data-only</code> pcap of the same switch</td><td>Data-only flows decoded (<code>no_template</code> 0): templates were restored from <code>/var/lib/nsconv</code></td><td>Status</td></tr>
+    <tr><td>16</td><td>Collector down</td><td>Same host: <code>systemctl stop illumio-flowlink</code> during a replay, then start it</td><td>nsconv stays up; alert <code>collector-down</code> within about 15 s; flows resume after the next template refresh (20 s)</td><td>Status, logs</td></tr>
+    <tr><td>17</td><td>Burst</td><td><code>--flows 50000 --pps 5000</code>, <code>tcpreplay --pps=5000 --loop=10</code></td><td>No kernel drops (<code>RcvbufErrors</code> unchanged), <code>unaccounted</code> 0, <code>flows_out</code> = <code>flows_in</code></td><td>Evidence: udp-snmp, status</td></tr>
+    <tr><td>18</td><td>FlowLink listener</td><td><code>ss -lunp | grep flowlink</code></td><td>Note IPv4, IPv6 or dual-stack bind; the evidence copies FlowLink’s config schema</td><td>Evidence: ss-udp</td></tr>
+    <tr><td>19</td><td>SELinux, firewall</td><td>Whole test</td><td>No AVC denial for nsconv or FlowLink</td><td>Evidence: avc-window, selinux</td></tr>
+  </table>
+  <div class="callout callout-info">
+    <div class="callout-label">Answers we are looking for</div>
+    Tests 6–11 and 18 tell us how FlowLink 2.0.1 treats switch-IP sources from a co-located relay, line-card domains, the sampling rate, the byte counters (IE 1 or 85), IPv6 and time buckets. Write what you see in the PCE next to the test number in <code>--note</code>, or in your message with the file.
+  </div>
+  <div class="ref-list">
+    <div class="ref-title">Sources</div>
+    <ol>
+      <li><a href="https://github.com/roschereric/netstream-converter">[nsconv] counters, alerts and commands as documented in the release (nsconvctl --help, operator guide) — github.com/roschereric/netstream-converter</a></li>
+      <li><a href="https://product-docs-repo.illumio.com/Tech-Docs/Core/26.1/Install-Upgrade-Admin/out/en/flowlink-2-0-0-configuration-and-usage/overview/scale-and-limitations.html">[official-Illumio] Flowlink scale and limitations — product-docs-repo.illumio.com/…/overview/scale-and-limitations.html</a></li>
+    </ol>
+  </div>
+</div>
+
+<div class="section" id="sec-evidence">
+  <div class="section-header">
+    <img src="assets/logo-dark.png" alt="Illumio">
+    <span class="section-label">Evidence</span>
+  </div>
+  <h2>Collect the evidence</h2>
+  <p><code>nsconv-collect-evidence.sh</code> runs as root for a time window (default 300 s). It captures the NetStream input (switch → nsconv) and every nsconv output (nsconv → collector) with tcpdump, each file capped at 100 MB, and collects everything needed to check the run. Nothing on the host is changed; a missing tool or file is recorded and the run goes on.</p>
+<pre><span class="label">NSCONV HOST</span>
+<span class="cmdlet">curl</span> <span class="param">-LO</span> https://roschereric.github.io/netstream-converter/test-kit/nsconv-collect-evidence.sh
+<span class="cmdlet">sudo bash</span> nsconv-collect-evidence.sh <span class="param">--dry-run</span>             <span class="comment"># shows what it will run</span>
+<span class="cmdlet">sudo bash</span> nsconv-collect-evidence.sh <span class="param">--secs</span> 300 <span class="param">--sample</span> v9.pcap <span class="param">--note</span> "tests 2, 6: v9, two switches"
+<span class="comment"># now start the replay on the replay host; it must finish inside the window</span>
+<span class="comment"># FlowLink on a separate host: run there at the same time</span>
+<span class="cmdlet">sudo bash</span> nsconv-collect-evidence.sh <span class="param">--flowlink-only --secs</span> 300
+</pre>
+  <table>
+    <tr><th style="width:28%">In the .tgz</th><th>Content</th></tr>
+    <tr><td><code>pcap/</code></td><td><code>input.pcap</code>, <code>output-&lt;name&gt;.pcap</code> (FlowLink host: <code>flowlink-input.pcap</code>), each decoded by <code>nsconvctl decode</code> into <code>.flows.jsonl</code></td></tr>
+    <tr><td><code>cmd/</code></td><td><code>nsconvctl version</code>, <code>status --json --detail</code> before and after, <code>logs --since</code>, journal (JSON), <code>config show</code>, unit status, <code>systemd-analyze security</code>, rp_filter and buffer sysctls, firewalld, nftables, SELinux and AVC denials, <code>ss -lunp</code>, <code>ip addr/route</code>, clock (chrony), FlowLink version, service and <code>illumio-flowlink-ctl status</code></td></tr>
+    <tr><td><code>files/</code></td><td><code>nsconv.toml</code>, FlowLink <code>config.yaml</code> with secrets replaced by <code>&lt;REDACTED&gt;</code>, the FlowLink log lines of the window, FlowLink’s config schema, your sample pcaps</td></tr>
+    <tr><td><code>MANIFEST.tsv</code>, <code>SHA256SUMS</code>, <code>SUMMARY.txt</code>, <code>NOTE.txt</code></td><td>Every item with its exit code and SHA-256; checksums for <code>sha256sum -c</code>; flows per capture and <code>unaccounted</code>; your note</td></tr>
+  </table>
+  <div class="callout callout-success">
+    <div class="callout-label">Send it back</div>
+    The script prints the file name <code>nsconv-evidence-&lt;host&gt;-&lt;UTC time&gt;.tgz</code> and its SHA-256. Send the .tgz (and the one from the FlowLink host, if separate) with the SHA-256 and your notes through your usual channel to your Illumio contact. The FlowLink API key file is never read, and API keys, secrets, tokens and passwords in <code>config.yaml</code> are replaced; the captures contain only the synthetic test flows.
+  </div>
+  <div class="ref-list">
+    <div class="ref-title">Sources</div>
+    <ol>
+      <li><a href="https://www.tcpdump.org/manpages/tcpdump.1.html">[official-tcpdump] tcpdump(1): -c, -U, -w, -i any — tcpdump.org/manpages/tcpdump.1.html</a></li>
+      <li>[lab] Rocky 8.10 test VM, 2026-10-20: the script ran as root (nsconv in exporter mode, collector on 127.0.0.1) and in <code>--flowlink-only</code> mode with a sample FlowLink config; secrets were redacted and every item was listed in MANIFEST.tsv.</li>
+    </ol>
+  </div>
+</div>
+
+<div class="section" id="sec-validate">
+  <div class="section-header">
+    <img src="assets/logo-dark.png" alt="Illumio">
+    <span class="section-label">Validation</span>
+  </div>
+  <h2>How the evidence is validated</h2>
+  <p>A test passes when every step below holds for its window. The checks use only what is inside the .tgz.</p>
+  <ul class="checklist">
+    <li><strong>Input = generated</strong> — the flows in <code>pcap/input.flows.jsonl</code> equal the generated flows (<code>--expect</code> file, or the sample pcap decoded again).</li>
+    <li><strong>Output = input</strong> — <code>pcap/output-&lt;name&gt;.flows.jsonl</code> holds the same flows (addresses, ports, protocol, packets, bytes, times), each exactly once, with the switch IP and port as exporter in exporter mode.</li>
+    <li><strong>Nothing unaccounted</strong> — in <code>nsconv-status-after.json</code>, <code>accounting.unaccounted</code> is 0, the difference of <code>flows_in</code> and <code>flows_out</code> before and after equals the replayed flows, <code>denied</code>, <code>malformed</code> and <code>send_errors</code> did not grow, and <code>RcvbufErrors</code> in <code>udp-snmp</code> did not change.</li>
+    <li><strong>FlowLink accepted the switches</strong> — <code>files/flowlink-window.log</code> names the switch IPs (or 127.0.0.1 / the nsconv host in local mode) and shows no discard or “bad data” for them.</li>
+    <li><strong>The PCE received them</strong> — the same log shows the uploads to the test PCE succeeding (with the PCE response code in verbose mode), and Explorer shows the workload flows of the test (your note).</li>
+    <li><strong>Host clean</strong> — no AVC denial, service active, no restart during the window (<code>NRestarts</code>).</li>
+  </ul>
+  <div class="ref-list">
+    <div class="ref-title">Sources</div>
+    <ol>
+      <li>[nsconv] status schema <code>nsconv.status/1</code>: accounting equations and the <code>unaccounted</code> residual, shown by <code>nsconvctl status</code>.</li>
+    </ol>
+  </div>
+</div>
+
+<div class="section" id="sec-appendix">
+  <div class="section-header">
+    <img src="assets/logo-dark.png" alt="Illumio">
+    <span class="section-label">Appendix</span>
+  </div>
+  <h2>Appendix: generator self-check</h2>
+  <p><code>--check</code> decodes the generated pcap with <code>nsconvctl decode --json</code> and compares every flow (exporter, addresses, ports, protocol, packets, bytes, start and end time, sampling rate) with what was generated. Run it on the nsconv host before a test.</p>
+<pre><span class="label">NSCONV HOST</span>
+<span class="cmdlet">/usr/libexec/platform-python</span> nsconv-sample-pcap.py <span class="param">--version</span> ipfix <span class="param">--ipv6 --sampling</span> 2048 <span class="param">--out</span> t.pcap <span class="param">--check</span>
+<span class="comment"># check OK: nsconvctl decoded 200 of 200 flows with identical addresses, ports, protocol, packets, bytes and times</span>
+</pre>
+  <p>Before this release, ten variants (v5; v5 with a second engine id; v9 and IPFIX, each IPv4 and IPv6, with and without a reported sampling rate; two switches each, 666 flows per file) were generated and decoded with no difference, on macOS and on Rocky Linux 8.10 with <code>platform-python</code> 3.6. On Rocky 8.10, the frames were also replayed with the switch source address into nsconv (exporter mode): the input and output captures of the evidence script held the same 500 flows, <code>unaccounted</code> was 0, and after a restart a data-only capture was still decoded from the restored templates.</p>
+  <div class="ref-list">
+    <div class="ref-title">Sources</div>
+    <ol>
+      <li>[lab] macOS and Rocky Linux 8.10 (platform-python 3.6.8), 2026-10-20: 10 of 10 generator variants decoded without difference.</li>
+    </ol>
+  </div>
+</div>
+
+<!-- ===== SECTIONS END (edit above this line ONLY) ===== -->
+
+<div class="disclaimer">
+  <div class="disclaimer-title">About this document</div>
+  <p>This guide was prepared by Eric Roscher – Illumio Pre-Sales, LATAM to guide the lab test of the nsconv 0.1.0-rc1 test release. It is a working aid for the recipient and is not an official publication of Illumio, Inc.; it does not modify or replace official product documentation, contractual agreements, or statements of work. Validate all technical details against the official documentation for your specific product versions before acting on them. Illumio and the Illumio logo are trademarks of Illumio, Inc., used here to identify the subject matter.</p>
+</div>
+
+<div class="content-footer">
+  <span>&copy; 2026 Illumio, Inc. All Rights Reserved.</span>
+  <span></span>
+</div>
+
+</div><!-- /content-wrap -->
+
+</body>
+</html>

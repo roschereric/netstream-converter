@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>nsconv documentation</title>
+<style>
+@font-face { font-family: 'Montserrat'; font-weight: 300; src: url('operator-guide/en/assets/fonts/Montserrat-Light.ttf'); }
+@font-face { font-family: 'Montserrat'; font-weight: 400; src: url('operator-guide/en/assets/fonts/Montserrat-Regular.ttf'); }
+@font-face { font-family: 'Montserrat'; font-weight: 700; src: url('operator-guide/en/assets/fonts/Montserrat-Bold.ttf'); }
+:root { --orange: #FF5500; --slate: #313638; --tan: #F7F4EE; --line: #EAEBEB; --gray: #6F7274; }
+* { box-sizing: border-box; }
+body { margin: 0; font-family: 'Montserrat', Arial, sans-serif; color: var(--slate); background: #FFFFFF; }
+header { background: var(--orange); color: #FFFFFF; padding: 32px 16px 40px; }
+header .wrap, main .wrap, footer .wrap { max-width: 900px; margin: 0 auto; }
+header img { height: 40px; display: block; margin-bottom: 36px; }
+h1 { font-weight: 300; font-size: 40px; margin: 0 0 12px; }
+header p { font-weight: 700; font-size: 17px; margin: 0; max-width: 640px; line-height: 1.5; }
+main { padding: 36px 16px 16px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
+.card { background: var(--tan); border-radius: 10px; padding: 22px; border-top: 4px solid var(--orange); }
+.card h2 { font-size: 18px; margin: 0 0 8px; }
+.card p { font-size: 14px; line-height: 1.55; margin: 0 0 14px; color: #464A4C; }
+.card a { display: inline-block; margin: 0 10px 8px 0; padding: 7px 12px; border-radius: 6px; background: #FFFFFF;
+  border: 1px solid var(--line); color: var(--slate); text-decoration: none; font-weight: 700; font-size: 13px; }
+.card a:hover, .card a:focus { border-color: var(--orange); color: var(--orange); }
+.note { font-size: 13px; color: var(--gray); margin-top: 26px; line-height: 1.5; }
+footer { padding: 24px 16px 40px; font-size: 12px; color: var(--gray); }
+footer .wrap { border-top: 1px solid var(--line); padding-top: 16px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <img src="operator-guide/en/assets/logo-white.png" alt="Illumio">
+    <h1>nsconv documentation</h1>
+    <p>NetStream converter: receives Huawei NetStream and sends clean IPFIX, NetFlow v9 or NetFlow v5 to Illumio FlowLink.</p>
+  </div>
+</header>
+<main>
+  <div class="wrap">
+    <div class="grid">
+      <div class="card">
+        <h2>Operator guide / Guía de operación</h2>
+        <p>Install, configure and run nsconv with FlowLink and Huawei switches. / Instalación, configuración y operación.</p>
+        <a href="operator-guide/en/report.html">English</a><a href="operator-guide/en/report.pdf">PDF</a><br>
+        <a href="operator-guide/es/report.html">Español</a><a href="operator-guide/es/report.pdf">PDF</a>
+      </div>
+      <div class="card">
+        <h2>Test kit / Kit de prueba</h2>
+        <p>Test this release step by step. / Pruebe esta versión paso a paso.</p>
+        <a href="test-kit/en/report.html">English</a><br>
+        <a href="test-kit/es/report.html">Español</a>
+      </div>
+      <div class="card">
+        <h2>Capture kit / Kit de captura</h2>
+        <p>Collect evidence from your Huawei switches. / Recolecte evidencia de sus switches Huawei.</p>
+        <a href="capture-kit/en/report.html">English</a><a href="capture-kit/en/report.pdf">PDF</a><br>
+        <a href="capture-kit/es/report.html">Español</a><a href="capture-kit/es/report.pdf">PDF</a>
+      </div>
+      <div class="card">
+        <h2>Downloads / Descargas</h2>
+        <p>RPM packages, static binaries, SHA256SUMS and SBOM. / Paquetes RPM, binarios, sumas y SBOM.</p>
+        <a href="https://github.com/roschereric/netstream-converter/tree/main/releases">Releases</a>
+      </div>
+    </div>
+    <p class="note">Each guide is also available as a single self-contained file (report-standalone.html) in its folder. / Cada guía también existe como un único archivo autocontenido (report-standalone.html) en su carpeta.</p>
+  </div>
+</main>
+<footer>
+  <div class="wrap">Working documents prepared by Eric Roscher – Illumio Pre-Sales, LATAM — not an official Illumio, Inc. publication. &copy; 2026 Illumio, Inc. All Rights Reserved.</div>
+</footer>
+</body>
+</html>

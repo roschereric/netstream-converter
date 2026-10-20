@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<!-- ================================================================
+     ILLUMIO BRANDED REPORT — generated from the illumio-branded-reports skill.
+     DO NOT hand-write or re-type this skeleton, the CSS, or the logos.
+     * Scaffold every new report with:  python <skill>/scripts/new_report.py
+     * Edit ONLY the region between the SECTIONS START / SECTIONS END markers
+       (plus the doc-overrides style block for per-document print tweaks).
+     * styles/report.css and assets/copy.js are canonical and hash-checked —
+       never edit or inline them.
+     * Before rendering:  python <skill>/scripts/check_brand.py <this file>
+     ================================================================ -->
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kit de captura NetStream</title>
+<link rel="stylesheet" href="styles/report.css">
+<script src="assets/copy.js" defer></script>
+<style id="doc-overrides">
+/* Per-document print overrides ONLY (max ~40 lines; checked by check_brand.py).
+   Typical use: short-section flow, e.g. .section:nth-child(3){break-before:auto} */
+@media print {
+  @page { @bottom-left { content: "Kit de captura NetStream"; } }
+}
+</style>
+</head>
+<body>
+
+<!-- ==================== COVER ==================== -->
+<div class="cover ">
+  
+  <div class="cover-content">
+    <div class="cover-logo">
+      <img src="assets/logo-white.png" alt="Illumio">
+    </div>
+    <div class="cover-spacer"></div>
+    <h1>Kit de captura NetStream</h1>
+    <p class="subtitle">Recolecte la evidencia que necesitamos de sus switches Huawei en aproximadamente una hora.</p>
+    <p class="cover-byline">Eric Roscher – Illumio Pre-Sales, LATAM</p>
+    <p class="cover-date">Octubre 2026</p>
+    <p class="cover-disclaimer">Guía de trabajo preparada por Eric Roscher – Illumio Pre-Sales, LATAM — no es una publicación oficial de Illumio, Inc.</p>
+    <div class="cover-bottom-spacer"></div>
+  </div>
+  <div class="cover-footer">
+    <span>&copy; 2026 Illumio, Inc. All Rights Reserved.</span>
+    <span></span>
+  </div>
+</div>
+
+<!-- ==================== CONTENT ==================== -->
+<div class="content-wrap">
+
+<!-- ===== SECTIONS START (edit below this line ONLY) ===== -->
+
+<div class="section" id="sec-overview">
+  <div class="section-header">
+    <img src="assets/logo-dark.png" alt="Illumio">
+    <span class="section-label">Resumen</span>
+  </div>
+  <h2>Resumen</h2>
+  <p>Para planificar la integración de sus switches Huawei con Illumio necesitamos ver qué exportan realmente. Este kit le indica cómo reunir esa evidencia con tres elementos: una captura de red corta, la salida de algunos comandos <code>display</code> y un cuestionario breve. No se instala ni se modifica nada en los switches, salvo un ajuste opcional descrito en la Parte 1.</p>
+
+  <div class="diagram-container">
+    <div class="diagram-title">Qué recolecta y a dónde va</div>
+    <svg viewBox="0 0 700 272" xmlns="http://www.w3.org/2000/svg" font-family="Montserrat, sans-serif">
+      <rect x="10" y="40" width="180" height="110" rx="8" fill="#F7F4EE" stroke="#313638" stroke-width="2"/>
+      <text x="100" y="75" text-anchor="middle" font-weight="700" font-size="13" fill="#313638">Switch Huawei</text>
+      <text x="100" y="97" text-anchor="middle" font-size="11" fill="#555">Nombre de ejemplo:</text>
+      <text x="100" y="114" text-anchor="middle" font-size="11" fill="#555">tor-sw-example-01</text>
+      <rect x="270" y="40" width="180" height="110" rx="8" fill="#F7F4EE" stroke="#313638" stroke-width="2"/>
+      <text x="360" y="68" text-anchor="middle" font-weight="700" font-size="13" fill="#313638">Host que recibe</text>
+      <text x="360" y="85" text-anchor="middle" font-weight="700" font-size="13" fill="#313638">NetStream</text>
+      <text x="360" y="107" text-anchor="middle" font-size="11" fill="#555">Ejemplo: 192.0.2.10</text>
+      <text x="360" y="124" text-anchor="middle" font-size="11" fill="#FF5500" font-weight="600">tcpdump crea el .pcap</text>
+      <rect x="530" y="40" width="160" height="110" rx="8" fill="none" stroke="#FF5500" stroke-width="2" stroke-dasharray="6,3"/>
+      <text x="610" y="68" text-anchor="middle" font-weight="700" font-size="13" fill="#313638">Su canal</text>
+      <text x="610" y="85" text-anchor="middle" font-weight="700" font-size="13" fill="#313638">aprobado</text>
+      <text x="610" y="112" text-anchor="middle" font-size="11" fill="#555">hacia su contacto</text>
+      <text x="610" y="128" text-anchor="middle" font-size="11" fill="#555">en Illumio</text>
+      <line x1="190" y1="95" x2="260" y2="95" stroke="#313638" stroke-width="1.5" stroke-dasharray="6,4"/>
+      <polygon points="260,91 270,95 260,99" fill="#313638"/>
+      <rect x="195" y="62" width="70" height="22" rx="4" fill="#FF5500"/>
+      <text x="230" y="77" text-anchor="middle" font-size="10" fill="white" font-weight="600">NetStream</text>
+      <line x1="450" y1="95" x2="520" y2="95" stroke="#313638" stroke-width="1.5" stroke-dasharray="6,4"/>
+      <polygon points="520,91 530,95 520,99" fill="#313638"/>
+      <rect x="455" y="62" width="60" height="22" rx="4" fill="#FF5500"/>
+      <text x="485" y="77" text-anchor="middle" font-size="10" fill="white" font-weight="600">Envío</text>
+      <rect x="10" y="190" width="180" height="70" rx="8" fill="#F7F4EE" stroke="#313638" stroke-width="2"/>
+      <text x="100" y="218" text-anchor="middle" font-weight="700" font-size="13" fill="#313638">CLI del switch</text>
+      <text x="100" y="238" text-anchor="middle" font-size="11" fill="#555">comandos display</text>
+      <line x1="190" y1="225" x2="610" y2="225" stroke="#313638" stroke-width="1.5" stroke-dasharray="6,4"/>
+      <line x1="610" y1="225" x2="610" y2="160" stroke="#313638" stroke-width="1.5" stroke-dasharray="6,4"/>
+      <polygon points="606,160 610,150 614,160" fill="#313638"/>
+      <rect x="290" y="213" width="170" height="24" rx="4" fill="#FF5500"/>
+      <text x="375" y="229" text-anchor="middle" font-size="10" fill="white" font-weight="600">Archivos de texto</text>
+    </svg>
+  </div>
+
+  <h3>Qué responde la evidencia</h3>
+  <ul>
+    <li>Si los switches exportan <strong>flujos IP</strong> (direcciones y puertos IPv4/IPv6) o solo flujos de <strong>capa 2</strong> (MAC/VLAN).</li>
+    <li>Qué <strong>versión de NetStream</strong> usa cada switch y si NetStream para IPv6 está configurado.</li>
+    <li>Si hay una <strong>tasa de muestreo</strong> configurada y si los flujos la informan.</li>
+    <li>Qué <strong>tarjetas de línea o miembros de stack</strong> exportan, el refresco de <strong>plantillas</strong> y el puerto UDP de origen.</li>
+    <li>Si el <strong>reloj, la zona horaria y el NTP</strong> de cada equipo son correctos.</li>
+    <li>El <strong>modelo y la versión de software</strong> exactos de cada switch.</li>
+  </ul>
+
+  <h3>Qué necesita</h3>
+  <ul>
+    <li><strong>Un host Linux que reciba los paquetes NetStream</strong> (el colector o cualquier host que vea el tráfico), con <code>tcpdump</code>.</li>
+    <li><strong>Acceso de lectura a cada switch</strong> (consola o SSH) para ejecutar comandos <code>display</code>.</li>
+    <li><strong>Aproximadamente una hora en total.</strong> La captura corre mientras reúne la salida de los comandos.</li>
+  </ul>
+  <div class="ref-list">
+    <div class="ref-title">Fuentes</div>
+    <ol>
+      <li><a href="https://info.support.huawei.com/info-finder/encyclopedia/en/NetStream.html">Huawei Encyclopedia — NetStream — info.support.huawei.com/info-finder/encyclopedia/en/NetStream.html</a></li>
+      <li><a href="https://support.huawei.com/enterprise/en/doc/EDOC1100138131/3a962da5/netstream-configuration-commands">Huawei CloudEngine 12800 — NetStream configuration commands — support.huawei.com/enterprise/en/doc/EDOC1100138131/3a962da5/netstream-configuration-commands</a></li>
+    </ol>
+  </div>
+</div>
+
+<div class="section" id="sec-capture">
+  <div class="section-header">
+    <img src="assets/logo-dark.png" alt="Illumio">
+    <span class="section-label">Captura</span>
+  </div>
+  <h2>Parte 1: Capture el tráfico NetStream</h2>
+  <p>El switch envía NetStream como paquetes UDP hacia su colector. Registrar esos paquetes en el host receptor nos muestra exactamente qué exporta cada switch. Los paquetes contienen solo resúmenes de flujo (direcciones, puertos, protocolo y contadores), no el contenido de su tráfico.</p>
+
+  <div class="step">
+    <div class="step-number">1</div>
+    <div class="step-content">
+      <h4>Anote los valores que usará</h4>
+      <p>La interfaz de red del host receptor que ve los paquetes NetStream y la dirección IP de gestión o de origen de cada switch. Ejecute <code>date -u</code> en el host y anote el resultado: lo comparamos con el reloj del switch.</p>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-number">2</div>
+    <div class="step-content">
+      <h4>Inicie la captura</h4>
+      <p>Use un archivo por switch, o un archivo para todos (vea el segundo comando). Detenga con <code>Ctrl+C</code>, o use la forma con <code>timeout</code> para que se detenga sola.</p>
+    </div>
+  </div>
+
+<pre><span class="label">HOST DE CAPTURA (LINUX)</span>
+<span class="comment"># Un switch. Reemplace los valores entre corchetes angulares.</span>
+<span class="cmdlet">sudo tcpdump</span> <span class="param">-i</span> &lt;interfaz&gt; <span class="param">-s</span> 0 <span class="param">-nn</span> <span class="param">-w</span> netstream.pcap udp and host &lt;ip-del-switch&gt;
+
+<span class="comment"># Varios switches en un archivo; se detiene sola a los 40 minutos (2400 s).</span>
+<span class="cmdlet">sudo timeout</span> <span class="param">-s</span> INT 2400 tcpdump <span class="param">-i</span> &lt;interfaz&gt; <span class="param">-s</span> 0 <span class="param">-nn</span> <span class="param">-w</span> netstream.pcap \
+  udp and '(host &lt;ip-switch-1&gt; or host &lt;ip-switch-2&gt;)'
+</pre>
+
+  <div class="step" style="break-before: page;">
+    <div class="step-number">3</div>
+    <div class="step-content">
+      <h4>Asegure que la captura incluya las plantillas</h4>
+      <p>Los switches con versión 9 describen sus registros en una plantilla que se envía solo de vez en cuando. Sin ella los registros no se pueden leer. Elija una opción.</p>
+    </div>
+  </div>
+  <table>
+    <tr><th style="width:30%">Opción</th><th>Qué hacer</th></tr>
+    <tr><td><strong>A. Captura más larga</strong> (sin cambios en el switch)</td><td>Capture durante 40 minutos, de modo que cubra el refresco de plantillas por defecto de 30 minutos<sup class="ref">1</sup>.</td></tr>
+    <tr><td><strong>B. Refresco más corto</strong> (si su proceso de cambios lo permite)</td><td>Configure el refresco de plantillas en 1 minuto durante la captura, capture 15 minutos y luego restaure su valor anterior. Serie S y AR: <code>ip netstream export template timeout-rate 1</code>. CE: <code>netstream export ip template timeout-rate 1</code>. Use <code>?</code> para confirmar el nombre del comando en su versión de software.</td></tr>
+    <tr><td><strong>C. Captura al iniciar la exportación</strong></td><td>Si habilita o reinicia la exportación NetStream en una ventana de mantenimiento, inicie la captura justo antes. Los switches envían sus plantillas cuando comienza la exportación.</td></tr>
+  </table>
+
+  <div class="step">
+    <div class="step-number">4</div>
+    <div class="step-content">
+      <h4>Verifique el archivo</h4>
+      <p>Liste los primeros paquetes. Debe ver paquetes UDP desde la IP del switch hacia su colector. Muchos switches Huawei envían desde el puerto UDP de origen 40000<sup class="ref">1</sup>. Si el archivo está vacío, revise el nombre de la interfaz, la IP del switch y cualquier firewall entre el switch y el host.</p>
+    </div>
+  </div>
+
+<pre><span class="label">HOST DE CAPTURA (LINUX)</span>
+<span class="cmdlet">tcpdump</span> <span class="param">-nn</span> <span class="param">-r</span> netstream.pcap <span class="param">-c</span> 5
+</pre>
+
+  <div class="callout callout-info">
+    <div class="callout-label">¿No tiene acceso al host receptor?</div>
+    Use espejado de puertos (SPAN) en el puerto del switch que se conecta al colector y envíe el tráfico espejado a un host Linux que ejecute el mismo comando <code>tcpdump</code> sobre la interfaz de espejo. Use su procedimiento estándar de espejado de puertos.
+  </div>
+
+  <div class="ref-list">
+    <div class="ref-title">Fuentes</div>
+    <ol>
+      <li><a href="https://netconfcentral.org/modules/huawei-netstream/2019-06-27">Módulo YANG de NetStream de Huawei (refresco de plantillas 30 min, puerto de origen 40000) — netconfcentral.org/modules/huawei-netstream/2019-06-27</a></li>
+      <li><a href="https://www.tcpdump.org/manpages/tcpdump.1.html">Manual de tcpdump — tcpdump.org/manpages/tcpdump.1.html</a></li>
+    </ol>
+  </div>
+</div>
+
+<div class="section" id="sec-commands">
+  <div class="section-header">
+    <img src="assets/logo-dark.png" alt="Illumio">
+    <span class="section-label">Comandos</span>
+  </div>
+  <h2>Parte 2: Reúna la información de los switches</h2>
+  <p>Ejecute los comandos siguientes en <strong>cada switch</strong> mientras corre la captura. Guarde la salida de cada switch en un archivo de texto (por ejemplo con el registro de sesión de su terminal). Si un comando no se reconoce en su versión de software, escriba el inicio del comando seguido de <code>?</code>, use la opción más cercana y continúe con el siguiente.</p>
+
+  <h3>2.1 Modelo, software y tarjetas de línea</h3>
+<pre><span class="label">CLI DEL SWITCH</span>
+<span class="cmdlet">screen-length</span> 0 temporary
+<span class="cmdlet">display</span> version
+<span class="cmdlet">display</span> device
+</pre>
+
+  <h3>2.2 Reloj, zona horaria y NTP</h3>
+  <p>Ejecute <code>display clock</code> en el momento en que ejecuta <code>date -u</code> en el host de captura, o anote ambas horas. Use el comando NTP que acepte su software: <code>ntp-service</code> en serie S y AR, <code>ntp</code> en CE.</p>
+<pre><span class="label">CLI DEL SWITCH</span>
+<span class="cmdlet">display</span> clock
+<span class="cmdlet">display</span> ntp-service status
+<span class="cmdlet">display</span> ntp-service sessions
+<span class="comment"># Software CE:</span>
+<span class="cmdlet">display</span> ntp status
+<span class="cmdlet">display</span> ntp sessions
+<span class="cmdlet">display</span> current-configuration | include clock
+<span class="cmdlet">display</span> current-configuration | include ntp
+</pre>
+
+  <h3>2.3 Configuración de NetStream</h3>
+<pre><span class="label">CLI DEL SWITCH</span>
+<span class="cmdlet">display</span> current-configuration | include netstream
+<span class="cmdlet">display</span> current-configuration | include sampler
+</pre>
+  <p>Las líneas de interfaz (por ejemplo <code>ip netstream inbound</code> o <code>netstream inbound ip</code>) aparecen bajo su interfaz en la configuración completa. Si puede compartir la configuración completa, agregue la salida de <code>display current-configuration</code>. Si no, ejecute <code>display this</code> dentro de cada interfaz que tenga NetStream e incluya el nombre de la interfaz.</p>
+
+  <h3>2.4 Estado y estadísticas de NetStream</h3>
+  <p>Liste los comandos display de NetStream de su versión, ejecute los de estadísticas y de caché de flujos y agregue su salida.</p>
+<pre><span class="label">CLI DEL SWITCH</span>
+<span class="cmdlet">display</span> ip netstream ?
+<span class="comment"># Software CE:</span>
+<span class="cmdlet">display</span> netstream ?
+</pre>
+
+  <h3>Qué buscamos en la configuración</h3>
+  <table>
+    <tr><th style="width:38%">Si la salida muestra</th><th>Nos indica</th></tr>
+    <tr><td><code>export version 5</code>, <code>9</code> o <code>ipfix</code></td><td>La versión de NetStream en uso</td></tr>
+    <tr><td>Líneas que empiezan con <code>ipv6 netstream</code></td><td>NetStream para IPv6 está configurado</td></tr>
+    <tr><td>Líneas que mencionan <code>ethernet</code></td><td>Hay flujos de capa 2 (Ethernet) configurados</td></tr>
+    <tr><td>Líneas <code>sampler</code></td><td>Modo, tasa y dirección del muestreo</td></tr>
+    <tr><td><code>template timeout-rate</code> y <code>template option</code></td><td>Refresco de plantillas y plantillas de opciones</td></tr>
+    <tr><td><code>export source</code> y <code>export host</code></td><td>Dirección de origen de la exportación, dirección y puerto del colector</td></tr>
+    <tr><td>Líneas <code>slot</code> y la salida de <code>display device</code></td><td>Tarjetas de línea y miembros de stack que exportan</td></tr>
+  </table>
+  <div class="ref-list">
+    <div class="ref-title">Fuentes</div>
+    <ol>
+      <li><a href="https://support.huawei.com/enterprise/en/doc/EDOC1100138131/3a962da5/netstream-configuration-commands">Huawei CloudEngine 12800 — NetStream configuration commands — support.huawei.com/enterprise/en/doc/EDOC1100138131/3a962da5/netstream-configuration-commands</a></li>
+      <li><a href="https://info.support.huawei.com/info-finder/encyclopedia/en/NetStream.html">Huawei Encyclopedia — NetStream — info.support.huawei.com/info-finder/encyclopedia/en/NetStream.html</a></li>
+    </ol>
+  </div>
+</div>
+
+<div class="section" id="sec-questionnaire">
+  <div class="section-header">
+    <img src="assets/logo-dark.png" alt="Illumio">
+    <span class="section-label">Cuestionario</span>
+  </div>
+  <h2>Parte 3: Cuestionario</h2>
+  <p>Responda en un archivo de texto o en su correo, un bloque por switch. Bastan respuestas cortas, y "no se sabe" es una respuesta válida.</p>
+
+  <h3>Para cada switch</h3>
+  <table>
+    <tr><th style="width:5%">#</th><th style="width:50%">Pregunta</th><th>Respuesta de ejemplo (ilustrativa)</th></tr>
+    <tr><td>1</td><td>Nombre del switch, IP de gestión y rol</td><td>tor-sw-example-01, 198.51.100.11, top of rack</td></tr>
+    <tr><td>2</td><td>¿Equipo individual, stack o chasis con tarjetas de línea?</td><td>Stack de dos miembros</td></tr>
+    <tr><td>3</td><td>Versión o versiones de NetStream exportadas (5, 8, 9)</td><td>9</td></tr>
+    <tr><td>4</td><td>¿También está configurado NetStream para IPv6?</td><td>No</td></tr>
+    <tr><td>5</td><td>Tipos de flujo exportados: IP, Ethernet (capa 2) o ambos</td><td>IP</td></tr>
+    <tr><td>6</td><td>¿Hay muestreo configurado? Tasa y dirección (entrada, salida)</td><td>1 de cada 1000, entrada</td></tr>
+    <tr><td>7</td><td>Interfaces con NetStream habilitado</td><td>Todos los enlaces ascendentes</td></tr>
+    <tr><td>8</td><td>Dirección y puerto UDP del colector, y la instancia VPN si existe</td><td>192.0.2.10, puerto 2055</td></tr>
+    <tr><td>9</td><td>¿Se cambiaron los valores por defecto de refresco de plantillas o de timeouts?</td><td>No</td></tr>
+    <tr><td>10</td><td>Servidores NTP en uso y zona horaria que debe usar el switch</td><td>Dos servidores, UTC-5</td></tr>
+  </table>
+
+  <h3>General</h3>
+  <table>
+    <tr><th style="width:5%">#</th><th style="width:50%">Pregunta</th><th>Respuesta de ejemplo (ilustrativa)</th></tr>
+    <tr><td>11</td><td>Hora de inicio, hora de fin y zona horaria de la captura, y el valor de <code>date -u</code> del host</td><td>2026-11-05 14:00 a 14:40</td></tr>
+    <tr><td>12</td><td>¿Qué colector o herramienta recibe hoy el NetStream, si hay alguno?</td><td>Colector de flujos existente</td></tr>
+    <tr><td>13</td><td>¿Hubo algo inusual durante la captura (mantenimiento, caída, cambio de configuración)?</td><td>Nada</td></tr>
+    <tr><td>14</td><td>Contacto técnico para preguntas de seguimiento</td><td>Su nombre y correo</td></tr>
+  </table>
+  <div class="ref-list">
+    <div class="ref-title">Fuentes</div>
+    <ol>
+      <li><a href="https://support.huawei.com/enterprise/en/doc/EDOC1100138131/3a962da5/netstream-configuration-commands">Huawei CloudEngine 12800 — NetStream configuration commands — support.huawei.com/enterprise/en/doc/EDOC1100138131/3a962da5/netstream-configuration-commands</a></li>
+    </ol>
+  </div>
+</div>
+
+<div class="section" id="sec-return">
+  <div class="section-header">
+    <img src="assets/logo-dark.png" alt="Illumio">
+    <span class="section-label">Entrega</span>
+  </div>
+  <h2>Parte 4: Nombre y envíe los archivos</h2>
+
+  <h3>Nombres de archivo</h3>
+  <p>Use este patrón, en minúsculas y sin espacios: <code>&lt;sitio&gt;_&lt;switch&gt;_&lt;contenido&gt;_&lt;aaaammdd&gt;.&lt;ext&gt;</code>. Los nombres siguientes son ejemplos.</p>
+  <table>
+    <tr><th style="width:55%">Archivo (nombres de ejemplo)</th><th>Contenido</th></tr>
+    <tr><td><code>sitio-ejemplo_tor-sw-example-01_netstream_20261105.pcap</code></td><td>Captura de la Parte 1</td></tr>
+    <tr><td><code>sitio-ejemplo_tor-sw-example-01_display_20261105.txt</code></td><td>Salida de comandos de la Parte 2</td></tr>
+    <tr><td><code>sitio-ejemplo_cuestionario_20261105.txt</code></td><td>Respuestas de la Parte 3</td></tr>
+  </table>
+
+  <h3>Empaquete y envíe</h3>
+  <p>Reúna todos los archivos en una carpeta, comprímala y genere una suma de verificación para que podamos confirmar que el archivo llegó íntegro.</p>
+<pre><span class="label">HOST DE CAPTURA (LINUX)</span>
+<span class="cmdlet">tar</span> <span class="param">-czf</span> sitio-ejemplo_netstream-kit_20261105.tar.gz sitio-ejemplo/
+<span class="cmdlet">sha256sum</span> sitio-ejemplo_netstream-kit_20261105.tar.gz
+</pre>
+  <p>Envíe el archivo comprimido y la línea de la suma de verificación al contacto de Illumio que le entregó este kit.</p>
+
+  <div class="callout callout-warning">
+    <div class="callout-label">Comparta por su canal aprobado</div>
+    La captura contiene las direcciones IP internas de sus servidores y equipos de red, y la salida de los comandos contiene nombres y direcciones de equipos. Envíe los archivos por el canal de intercambio de archivos que su organización apruebe para este tipo de datos. Los comandos filtrados de este kit no muestran contraseñas ni claves; revise los archivos antes de enviarlos si agregó la configuración completa.
+  </div>
+
+  <h3>Lista de verificación final</h3>
+  <ul class="checklist">
+    <li><strong>Archivo de captura</strong> — un archivo por switch, o uno con todos los switches, de al menos 15 minutos con plantillas, o de 40 minutos.</li>
+    <li><strong>Salida de comandos</strong> — un archivo de texto por switch con los comandos de la Parte 2.</li>
+    <li><strong>Cuestionario</strong> — respuestas para cada switch y las preguntas generales.</li>
+    <li><strong>Horas</strong> — el valor <code>date -u</code> del host y el valor <code>display clock</code> de cada switch.</li>
+    <li><strong>Paquete</strong> — archivo comprimido y suma de verificación enviados por el canal aprobado.</li>
+  </ul>
+  <div class="ref-list">
+    <div class="ref-title">Fuentes</div>
+    <ol>
+      <li><a href="https://www.gnu.org/software/coreutils/manual/html_node/sha2-utilities.html">GNU Coreutils — sha2 utilities — gnu.org/software/coreutils/manual/html_node/sha2-utilities.html</a></li>
+    </ol>
+  </div>
+</div>
+
+<!-- ===== SECTIONS END (edit above this line ONLY) ===== -->
+
+<div class="disclaimer">
+  <div class="disclaimer-title">Acerca de este documento</div>
+  <p>Esta guía fue preparada por Eric Roscher – Illumio Pre-Sales, LATAM para guiar la recolección de evidencia NetStream de switches Huawei. Es un material de apoyo para el destinatario y no constituye una publicación oficial de Illumio, Inc.; no modifica ni reemplaza la documentación oficial del producto, los acuerdos contractuales ni los alcances de trabajo (SOW). Valide todos los detalles técnicos contra la documentación oficial correspondiente a sus versiones específicas antes de actuar sobre ellos. Illumio y el logotipo de Illumio son marcas de Illumio, Inc., utilizadas aquí para identificar el tema tratado.</p>
+</div>
+
+<div class="content-footer">
+  <span>&copy; 2026 Illumio, Inc. All Rights Reserved.</span>
+  <span></span>
+</div>
+
+</div><!-- /content-wrap -->
+
+</body>
+</html>
