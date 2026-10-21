@@ -3,147 +3,150 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="color-scheme" content="light dark">
+<meta name="color-scheme" content="light">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <title>nsconv Test Kit</title>
 <meta name="description" content="Test release 0.1.0-rc1 end to end: simulated NetStream, FlowLink and a test PCE, with an evidence bundle.">
 <!-- Built by scripts/operator-guide/build_docs.py from scripts/operator-guide/src/. Edit the sources, not this file. -->
 <style>
 :root {
-  --bg: #ffffff; --fg: #1f2933; --muted: #5b6672; --line: #e1e6eb; --soft: #f3f5f7; --side: #f7f9fa;
-  --accent: #1f6f8b; --accent-soft: #e5f0f4; --code: #f3f5f7; --c-comment: #6b7785; --c-cmd: #1f6f8b; --c-param: #8250df;
-  --info: #1f6f8b; --info-soft: #eaf3f7; --warn: #9a6700; --warn-soft: #fff7e0; --crit: #b42318; --crit-soft: #fdeeec;
-  --ok: #1a7f37; --ok-soft: #eaf6ed;
-  --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
-  --mono: ui-monospace, "SF Mono", Menlo, Consolas, "DejaVu Sans Mono", "Liberation Mono", monospace;
-  --side-w: 290px;
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #14181d; --fg: #dfe5ec; --muted: #98a3af; --line: #2b333c; --soft: #1c2229; --side: #181d23;
-    --accent: #62b6d3; --accent-soft: #1b313a; --code: #1b2128; --c-comment: #8994a0; --c-cmd: #62b6d3; --c-param: #c6a6ff;
-    --info: #62b6d3; --info-soft: #18303a; --warn: #e3b341; --warn-soft: #30290f; --crit: #ff8a7a; --crit-soft: #3a1d1a;
-    --ok: #5fcf7f; --ok-soft: #173020;
-  }
+  --bg: #ffffff; --fg: #313638; --muted: #6F7274; --line: #E4E1DA; --soft: #EFECE6; --side: #F7F4EE; --zebra: #FBFAF7;
+  --accent: #FF5500; --link: #C04000; --code: #1A2C32; --code-fg: #E8E6E3; --c-comment: #8FA3AB; --c-cmd: #FFB38A; --c-param: #9CD3E8;
+  --info: #2B6CB0; --info-soft: #EEF4FB; --warn: #FF5500; --warn-soft: #FFF4EC; --crit: #B42318; --crit-soft: #FDEEEC;
+  --ok: #2E8540; --ok-soft: #EEF7F0;
+  --sans: Montserrat, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --side-w: 290px; --top-h: 56px;
 }
 * { box-sizing: border-box; }
-html { scroll-padding-top: 16px; -webkit-text-size-adjust: 100%; }
-body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.6 var(--sans); }
-a { color: var(--accent); }
+html { scroll-behavior: smooth; scroll-padding-top: calc(var(--top-h) + 16px); -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.6 var(--sans); }
+a { color: var(--link); }
 code, pre, .tui { font-family: var(--mono); font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
-code { font-size: .88em; background: var(--soft); padding: .08em .3em; border-radius: 4px; overflow-wrap: anywhere; }
+code { font-size: .88em; background: var(--soft); padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
 .skip { position: absolute; left: -999px; top: 8px; background: var(--bg); padding: 6px 10px; z-index: 30; }
 .skip:focus { left: 8px; }
 
+/* top bar (as in the fl-doctor docs) */
+.top { position: fixed; top: 0; left: 0; right: 0; height: var(--top-h); display: flex; align-items: center; gap: 16px;
+  padding: 0 20px; background: var(--bg); border-bottom: 1px solid var(--line); border-top: 3px solid var(--accent); z-index: 25; }
+.top .t { font-weight: 700; font-size: 16px; white-space: nowrap; }
+.top .t span { font-weight: 300; color: var(--muted); }
+.top .av { margin-left: auto; font-size: 12px; color: var(--muted); }
+.top a.hl { font-size: 13px; color: var(--accent); font-weight: 600; text-decoration: none; white-space: nowrap; }
+.menu-btn { display: none; border: 1px solid var(--line); background: var(--bg); border-radius: 6px; padding: 4px 10px; cursor: pointer; }
+.navtoggle { position: absolute; opacity: 0; pointer-events: none; }
+
 /* layout */
-.sidebar { position: fixed; top: 0; bottom: 0; left: 0; width: var(--side-w); overflow-y: auto; background: var(--side);
-  border-right: 1px solid var(--line); padding: 20px 14px 24px; font-size: 14px; line-height: 1.35; z-index: 20; }
-main { margin-left: var(--side-w); padding: 32px 48px 48px; }
-.wrap { max-width: 900px; }
-.side-title { font-weight: 700; font-size: 17px; color: var(--fg); text-decoration: none; display: block; margin: 0 6px 2px; }
-.side-sub { color: var(--muted); font-size: 12.5px; margin: 0 6px 12px; }
-.lang { margin: 0 6px 14px; font-size: 13px; color: var(--muted); }
-.lang a, .lang strong { padding: 2px 7px; border: 1px solid var(--line); border-radius: 5px; text-decoration: none; }
-.lang strong { color: var(--fg); background: var(--bg); }
+.sidebar { position: fixed; top: var(--top-h); bottom: 0; left: 0; width: var(--side-w); overflow-y: auto; background: var(--side);
+  border-right: 1px solid var(--line); padding: 18px 12px 40px 20px; font-size: 13.5px; line-height: 1.4; z-index: 20; }
+main { margin: var(--top-h) 0 0 var(--side-w); padding: 28px 48px 80px; }
+.wrap { max-width: 1100px; }
+.side-title, .side-sub, .lang { display: none; }
 .nav, .nav ul { list-style: none; margin: 0; padding: 0; }
-.nav .group { margin: 16px 6px 6px; font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
-.nav a { display: block; padding: 5px 8px; border-left: 3px solid transparent; border-radius: 0 5px 5px 0; color: var(--fg); text-decoration: none; }
-.nav ul a { padding: 3px 8px 3px 20px; font-size: 13px; color: var(--muted); }
-.nav a:hover { background: var(--soft); }
-.nav a.active { border-left-color: var(--accent); background: var(--accent-soft); color: var(--fg); font-weight: 600; }
-.nav li.current > a { color: var(--fg); font-weight: 600; }
-.side-foot { margin: 22px 6px 0; padding-top: 14px; border-top: 1px solid var(--line); font-size: 13px; display: grid; gap: 8px; }
-.side-foot a { text-decoration: none; }
-.topbar, .navtoggle { display: none; }
+.nav ul { margin: 2px 0 10px 10px; border-left: 1px solid var(--line); }
+.nav .group { margin: 14px 0 4px; padding: 0 10px; font-weight: 700; }
+.nav .group a { padding: 3px 0; font-weight: 700; }
+.nav a { display: block; padding: 3px 10px; color: var(--fg); text-decoration: none; border-radius: 4px; }
+.nav > li > a { font-weight: 700; margin-top: 10px; }
+.nav a:hover { background: var(--bg); }
+.nav a.active { color: var(--accent); background: var(--bg); font-weight: 600; }
+.side-foot { margin: 22px 0 0; padding: 14px 10px 0; border-top: 1px solid var(--line); font-size: 13px; display: grid; gap: 8px; }
+.side-foot a { text-decoration: none; color: var(--link); }
 
 /* document head and footer */
-.doc-head { border-bottom: 1px solid var(--line); padding-bottom: 20px; margin-bottom: 8px; }
+.doc-head { padding-bottom: 10px; margin-bottom: 8px; }
 .kicker { color: var(--muted); font-size: 13px; letter-spacing: .04em; margin: 0 0 6px; }
-h1 { font-size: 34px; line-height: 1.2; margin: 0 0 10px; letter-spacing: -.01em; }
-.lead { font-size: 18px; color: var(--muted); margin: 0 0 18px; }
-.notice { border: 1px solid var(--warn); background: var(--warn-soft); border-radius: 8px; padding: 10px 14px; font-size: 14.5px; }
-.notice strong { color: var(--warn); }
-footer.doc-foot { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13.5px; }
+h1 { font-weight: 300; font-size: 34px; line-height: 1.2; margin: 8px 0 4px; }
+.lead { font-size: 17px; color: var(--muted); margin: 0 0 18px; }
+.notice { margin: 14px 0; padding: 10px 14px; border-left: 4px solid var(--warn); background: var(--warn-soft); border-radius: 4px; font-size: 14px; }
+.notice strong { color: var(--fg); }
+footer.doc-foot { margin-top: 60px; padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12.5px; }
 footer.doc-foot p { margin: 0 0 8px; }
 
 /* content */
-h2 { font-size: 26px; line-height: 1.25; margin: 0 0 14px; padding-top: 8px; }
-h3 { font-size: 19px; margin: 28px 0 8px; }
-h4 { font-size: 16px; margin: 0 0 4px; }
-.section { padding-top: 32px; }
-.part { margin-top: 64px; padding: 26px 0 8px; border-top: 3px solid var(--accent); }
+h2 { font-size: 24px; line-height: 1.3; margin: 48px 0 10px; padding-top: 12px; border-top: 1px solid var(--line); }
+h2::before { content: ""; display: inline-block; width: 10px; height: 10px; background: var(--accent); margin-right: 10px; vertical-align: middle; }
+h3 { font-size: 18px; margin: 32px 0 8px; }
+h4 { font-size: 15px; margin: 22px 0 6px; }
+.section { padding-top: 0; }
+.doc-head + .section > h2:first-child { margin-top: 24px; }
+.part { margin-top: 64px; padding: 22px 0 8px; border-top: 3px solid var(--accent); }
 .part h1 { font-size: 30px; }
 p, ul, ol { margin: 0 0 14px; }
 li { margin: 4px 0; }
 .tw { overflow-x: auto; margin: 12px 0 18px; }
-table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
 th, td { text-align: left; vertical-align: top; padding: 7px 10px; border-bottom: 1px solid var(--line); }
-th { background: var(--soft); font-weight: 600; }
+th { background: var(--fg); color: #fff; font-weight: 600; font-size: 12.5px; text-transform: uppercase; letter-spacing: .03em; }
+tbody tr:nth-child(even) { background: var(--zebra); }
 table.ref td:first-child code { white-space: nowrap; }
-pre { background: var(--code); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; margin: 10px 0 18px;
-  overflow-x: auto; font-size: 13.5px; line-height: 1.5; white-space: pre; }
-pre .label { display: block; margin: -4px 0 8px; font: 600 11px/1.4 var(--sans); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+th code { background: rgba(255,255,255,.18); color: inherit; text-transform: none; }
+pre { background: var(--code); color: var(--code-fg); border-left: 3px solid var(--accent); border-radius: 6px; padding: 14px 16px;
+  margin: 10px 0 18px; overflow-x: auto; font-size: 13px; line-height: 1.5; white-space: pre; }
+pre code { background: none; padding: 0; color: inherit; }
+pre .label { display: block; margin: -4px 0 8px; font: 600 11px/1.4 var(--sans); letter-spacing: .06em; text-transform: uppercase; color: var(--c-comment); }
 pre .comment { color: var(--c-comment); } pre .cmdlet { color: var(--c-cmd); font-weight: 600; } pre .param { color: var(--c-param); }
 .code { position: relative; }
-.copy { position: absolute; top: 6px; right: 6px; font: 12px var(--sans); color: var(--muted); background: var(--bg);
-  border: 1px solid var(--line); border-radius: 5px; padding: 2px 8px; cursor: pointer; }
-.copy:hover { color: var(--fg); }
-.code-multipart pre { margin: 0; border-radius: 0; border-top-width: 0; }
-.code-multipart .code:first-child pre { border-radius: 8px 8px 0 0; border-top-width: 1px; }
-.code-multipart .code:last-child pre { border-radius: 0 0 8px 8px; margin-bottom: 18px; }
-figure.diagram { margin: 18px 0 22px; border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; overflow-x: auto; }
-figure.diagram figcaption { font-weight: 600; font-size: 14px; color: var(--muted); margin-bottom: 8px; }
+.copy { position: absolute; top: 6px; right: 6px; font: 600 11px var(--sans); background: #2C4048; color: #fff; border: 0;
+  border-radius: 4px; padding: 3px 8px; cursor: pointer; }
+.copy:hover { background: var(--accent); }
+.code-multipart pre { margin: 0; border-radius: 0; }
+.code-multipart .code:first-child pre { border-radius: 6px 6px 0 0; }
+.code-multipart .code:last-child pre { border-radius: 0 0 6px 6px; margin-bottom: 18px; }
+figure.diagram { margin: 18px 0 22px; border: 1px solid var(--line); border-radius: 6px; padding: 12px 14px; overflow-x: auto; }
+figure.diagram figcaption { font-weight: 600; font-size: 12.5px; color: var(--muted); margin-bottom: 8px; }
 figure.diagram svg { display: block; width: 100%; min-width: 560px; height: auto; font-family: var(--sans); }
-svg [fill="#F3F5F7"] { fill: var(--soft); } svg [stroke="#2B3440"] { stroke: var(--fg); } svg [fill="#2B3440"] { fill: var(--fg); }
-svg [fill="#5B6672"] { fill: var(--muted); } svg [fill="#1F6F8B"] { fill: var(--accent); } svg [stroke="#1F6F8B"] { stroke: var(--accent); }
-svg [fill="white"] { fill: var(--bg); }
-.callout { border-left: 4px solid var(--info); background: var(--info-soft); border-radius: 0 8px 8px 0; padding: 10px 14px; margin: 14px 0 18px; }
+.callout { margin: 14px 0; padding: 10px 14px; border-left: 4px solid var(--info); background: var(--info-soft); border-radius: 4px; }
 .callout-label { font-weight: 700; margin-bottom: 4px; }
 .callout-warning { border-color: var(--warn); background: var(--warn-soft); }
 .callout-critical { border-color: var(--crit); background: var(--crit-soft); }
 .callout-success { border-color: var(--ok); background: var(--ok-soft); }
 .phase-banner { display: flex; flex-wrap: wrap; gap: 10px; align-items: baseline; margin: 26px 0 10px; padding: 8px 12px;
-  border-radius: 8px; background: var(--soft); border: 1px solid var(--line); }
+  border-radius: 4px; background: var(--side); border-left: 4px solid var(--accent); }
 .phase-num { font-size: 12px; font-weight: 700; letter-spacing: .06em; color: var(--accent); }
 .phase-title { font-weight: 600; }
 .step { display: flex; gap: 12px; margin: 16px 0 8px; }
-.step-number { flex: none; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: var(--bg);
+.step-number { flex: none; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: #fff;
   display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
 .step-content p { margin: 0; }
 ul.checklist { list-style: none; padding-left: 0; }
 ul.checklist li { padding-left: 28px; position: relative; }
 ul.checklist li::before { content: "\2610"; position: absolute; left: 4px; color: var(--accent); }
 sup.ref { font-size: .7em; color: var(--muted); }
-.ref-list { margin: 22px 0 0; padding: 10px 14px; border-radius: 8px; background: var(--soft); font-size: 13px; color: var(--muted); }
+.ref-list { margin: 22px 0 0; padding: 10px 14px; border-radius: 4px; background: var(--side); font-size: 13px; color: var(--muted); }
 .ref-title { font-weight: 700; text-transform: uppercase; letter-spacing: .06em; font-size: 11px; margin-bottom: 4px; }
 .ref-list ol { margin: 0; padding-left: 20px; }
 .ref-list a { overflow-wrap: anywhere; }
 .tui { font-size: 11.5px; line-height: 1.3; white-space: pre; background: #1e1e1e; color: #e6e6e6; padding: 10px 12px;
-  border-radius: 8px; margin: 10px 0 20px; overflow-x: auto; max-width: 100%; }
+  border-radius: 6px; margin: 10px 0 20px; overflow-x: auto; max-width: 100%; box-shadow: 0 2px 10px rgba(0,0,0,.18); }
 .print-only { display: none; }
 
 /* phone and tablet */
-@media (max-width: 960px) {
-  .topbar { display: flex; position: sticky; top: 0; z-index: 25; align-items: center; gap: 12px; padding: 10px 16px;
-    background: var(--side); border-bottom: 1px solid var(--line); }
-  .topbar label { border: 1px solid var(--line); border-radius: 6px; padding: 4px 12px; cursor: pointer; font-size: 14px; background: var(--bg); }
-  .topbar span { font-weight: 600; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-  .sidebar { display: none; top: 49px; width: 100%; max-width: 380px; box-shadow: 0 8px 24px rgba(0,0,0,.18); }
-  .navtoggle:checked ~ .sidebar { display: block; }
-  main { margin-left: 0; padding: 20px 16px 40px; }
-  html { scroll-padding-top: 64px; }
-  h1 { font-size: 27px; } h2 { font-size: 22px; } .lead { font-size: 16px; }
+@media (max-width: 900px) {
+  .menu-btn { display: block; }
+  .top .av { display: none; }
+  .top { gap: 10px; padding: 0 12px; }
+  .top .t span, .top a.dl { display: none; }
+  .top a.hl:last-child { margin-left: auto; }
+  .sidebar { transform: translateX(-100%); transition: transform .2s; width: 86vw; box-shadow: 0 8px 24px rgba(0,0,0,.18); }
+  .navtoggle:checked ~ .sidebar { transform: none; }
+  main { margin-left: 0; padding: 24px 16px 60px; }
+  h1 { font-size: 27px; } h2 { font-size: 21px; } .lead { font-size: 15.5px; }
+  code { white-space: normal; } main a { overflow-wrap: anywhere; }
   .tui { font-size: 9px; }
 }
 
 /* print (WeasyPrint / browser) */
 @media print {
   @page { size: A4; margin: 16mm 14mm 18mm;
-    @bottom-left { content: "nsconv Test Kit · Unofficial community tool, not supported by Illumio"; font: 7.5pt var(--sans); color: #5b6672; }
-    @bottom-right { content: counter(page) " / " counter(pages); font: 7.5pt var(--sans); color: #5b6672; } }
+    @bottom-left { content: "nsconv Test Kit · Unofficial community tool, not supported by Illumio"; font: 7.5pt var(--sans); color: #6F7274; }
+    @bottom-right { content: counter(page) " / " counter(pages); font: 7.5pt var(--sans); color: #6F7274; } }
   @page :first { @bottom-left { content: none; } @bottom-right { content: none; } }
-  :root { --bg: #fff; --fg: #1f2933; }
   body { font-size: 10pt; line-height: 1.5; }
-  .sidebar, .topbar, .copy, .doc-head, .skip { display: none !important; }
+  .sidebar, .top, .copy, .doc-head, .skip { display: none !important; }
   main { margin: 0; padding: 0; }
   .wrap { max-width: none; }
   .print-only { display: block; }
@@ -155,7 +158,7 @@ sup.ref { font-size: .7em; color: var(--muted); }
   .print-toc h2 { font-size: 18pt; }
   .print-toc ol { list-style: none; padding: 0; }
   .print-toc li { margin: 6px 0; }
-  .print-toc li.group { font-weight: 700; margin-top: 14px; text-transform: uppercase; font-size: 9pt; color: #5b6672; }
+  .print-toc li.group { font-weight: 700; margin-top: 14px; text-transform: uppercase; font-size: 9pt; color: #6F7274; }
   .print-toc a { color: inherit; text-decoration: none; }
   .print-toc a::after { content: leader('.') target-counter(attr(href), page); }
   .section, .part { break-before: page; padding-top: 0; margin-top: 0; }
@@ -176,7 +179,9 @@ sup.ref { font-size: .7em; color: var(--muted); }
 <body>
 <a class="skip" href="#main">Skip to content</a>
 <input type="checkbox" id="navtoggle" class="navtoggle" aria-hidden="true">
-<div class="topbar"><label for="navtoggle">Menu</label><span>nsconv Test Kit</span></div>
+<header class="top"><label class="menu-btn" for="navtoggle" aria-label="Menu">&#9776;</label>
+<div class="t">nsconv 0.1.0-rc1 <span>&middot; Test kit</span></div><div class="av">Unofficial community tool, not supported by Illumio</div>
+<a class="hl dl" href="https://github.com/roschereric/netstream-converter/tree/main/releases">Download (GitHub)</a><a class="hl" href="es/index.html" hreflang="es" lang="es">Español</a></header>
 <nav class="sidebar" id="sidebar" aria-label="Contents">
   <a class="side-title" href="#top">nsconv</a>
   <div class="side-sub">nsconv 0.1.0-rc1</div>
@@ -245,59 +250,59 @@ sup.ref { font-size: .7em; color: var(--muted); }
   <figure class="diagram">
     <figcaption>Test lab and data flows (all names and addresses are examples)</figcaption>
     <svg viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg">
-      <rect x="10" y="40" width="135" height="130" rx="8" fill="#F3F5F7" stroke="#2B3440" stroke-width="2"/>
-      <text x="77" y="66" text-anchor="middle" font-weight="700" font-size="13" fill="#2B3440">Replay host</text>
-      <text x="77" y="86" text-anchor="middle" font-size="10" fill="#5B6672">stands in for the</text>
-      <text x="77" y="100" text-anchor="middle" font-size="10" fill="#5B6672">Huawei switch</text>
-      <text x="77" y="122" text-anchor="middle" font-size="10" fill="#5B6672">Example: 192.0.2.20</text>
-      <text x="77" y="142" text-anchor="middle" font-size="10" fill="#1F6F8B" font-weight="600">sends as switch</text>
-      <text x="77" y="156" text-anchor="middle" font-size="10" fill="#1F6F8B" font-weight="600">198.51.100.21:40000</text>
+      <rect x="10" y="40" width="135" height="130" rx="8" fill="#F7F4EE" stroke="#313638" stroke-width="2"/>
+      <text x="77" y="66" text-anchor="middle" font-weight="700" font-size="13" fill="#313638">Replay host</text>
+      <text x="77" y="86" text-anchor="middle" font-size="10" fill="#6F7274">stands in for the</text>
+      <text x="77" y="100" text-anchor="middle" font-size="10" fill="#6F7274">Huawei switch</text>
+      <text x="77" y="122" text-anchor="middle" font-size="10" fill="#6F7274">Example: 192.0.2.20</text>
+      <text x="77" y="142" text-anchor="middle" font-size="10" fill="#FF5500" font-weight="600">sends as switch</text>
+      <text x="77" y="156" text-anchor="middle" font-size="10" fill="#FF5500" font-weight="600">198.51.100.21:40000</text>
 
-      <rect x="195" y="40" width="135" height="130" rx="8" fill="#F3F5F7" stroke="#2B3440" stroke-width="2"/>
-      <text x="262" y="66" text-anchor="middle" font-weight="700" font-size="13" fill="#2B3440">nsconv host</text>
-      <text x="262" y="86" text-anchor="middle" font-size="10" fill="#5B6672">RHEL / Rocky 8</text>
-      <text x="262" y="100" text-anchor="middle" font-size="10" fill="#5B6672">Example: 192.0.2.10</text>
-      <text x="262" y="122" text-anchor="middle" font-size="10" fill="#5B6672">input "huawei"</text>
-      <text x="262" y="136" text-anchor="middle" font-size="10" fill="#5B6672">UDP 9996</text>
+      <rect x="195" y="40" width="135" height="130" rx="8" fill="#F7F4EE" stroke="#313638" stroke-width="2"/>
+      <text x="262" y="66" text-anchor="middle" font-weight="700" font-size="13" fill="#313638">nsconv host</text>
+      <text x="262" y="86" text-anchor="middle" font-size="10" fill="#6F7274">RHEL / Rocky 8</text>
+      <text x="262" y="100" text-anchor="middle" font-size="10" fill="#6F7274">Example: 192.0.2.10</text>
+      <text x="262" y="122" text-anchor="middle" font-size="10" fill="#6F7274">input "huawei"</text>
+      <text x="262" y="136" text-anchor="middle" font-size="10" fill="#6F7274">UDP 9996</text>
 
-      <rect x="380" y="40" width="135" height="130" rx="8" fill="#F3F5F7" stroke="#2B3440" stroke-width="2"/>
-      <text x="447" y="66" text-anchor="middle" font-weight="700" font-size="13" fill="#2B3440">FlowLink</text>
-      <text x="447" y="86" text-anchor="middle" font-size="10" fill="#5B6672">same host: 127.0.0.1</text>
-      <text x="447" y="100" text-anchor="middle" font-size="10" fill="#5B6672">or separate host</text>
-      <text x="447" y="114" text-anchor="middle" font-size="10" fill="#5B6672">Example: 192.0.2.11</text>
-      <text x="447" y="136" text-anchor="middle" font-size="10" fill="#5B6672">ipfix UDP 4739</text>
-      <text x="447" y="150" text-anchor="middle" font-size="10" fill="#5B6672">netflow UDP 2055</text>
+      <rect x="380" y="40" width="135" height="130" rx="8" fill="#F7F4EE" stroke="#313638" stroke-width="2"/>
+      <text x="447" y="66" text-anchor="middle" font-weight="700" font-size="13" fill="#313638">FlowLink</text>
+      <text x="447" y="86" text-anchor="middle" font-size="10" fill="#6F7274">same host: 127.0.0.1</text>
+      <text x="447" y="100" text-anchor="middle" font-size="10" fill="#6F7274">or separate host</text>
+      <text x="447" y="114" text-anchor="middle" font-size="10" fill="#6F7274">Example: 192.0.2.11</text>
+      <text x="447" y="136" text-anchor="middle" font-size="10" fill="#6F7274">ipfix UDP 4739</text>
+      <text x="447" y="150" text-anchor="middle" font-size="10" fill="#6F7274">netflow UDP 2055</text>
 
-      <rect x="565" y="40" width="125" height="130" rx="8" fill="none" stroke="#1F6F8B" stroke-width="2" stroke-dasharray="6,3"/>
-      <text x="627" y="80" text-anchor="middle" font-weight="700" font-size="13" fill="#2B3440">Test PCE</text>
-      <text x="627" y="100" text-anchor="middle" font-size="10" fill="#5B6672">SaaS</text>
-      <text x="627" y="122" text-anchor="middle" font-size="10" fill="#5B6672">not the production</text>
-      <text x="627" y="136" text-anchor="middle" font-size="10" fill="#5B6672">PCE</text>
+      <rect x="565" y="40" width="125" height="130" rx="8" fill="none" stroke="#FF5500" stroke-width="2" stroke-dasharray="6,3"/>
+      <text x="627" y="80" text-anchor="middle" font-weight="700" font-size="13" fill="#313638">Test PCE</text>
+      <text x="627" y="100" text-anchor="middle" font-size="10" fill="#6F7274">SaaS</text>
+      <text x="627" y="122" text-anchor="middle" font-size="10" fill="#6F7274">not the production</text>
+      <text x="627" y="136" text-anchor="middle" font-size="10" fill="#6F7274">PCE</text>
 
-      <line x1="145" y1="105" x2="187" y2="105" stroke="#2B3440" stroke-width="1.5"/>
-      <polygon points="185,101 195,105 185,109" fill="#2B3440"/>
-      <circle cx="168" cy="105" r="10" fill="#1F6F8B"/>
+      <line x1="145" y1="105" x2="187" y2="105" stroke="#313638" stroke-width="1.5"/>
+      <polygon points="185,101 195,105 185,109" fill="#313638"/>
+      <circle cx="168" cy="105" r="10" fill="#FF5500"/>
       <text x="168" y="109" text-anchor="middle" font-size="11" fill="white" font-weight="700">1</text>
-      <line x1="330" y1="105" x2="372" y2="105" stroke="#2B3440" stroke-width="1.5"/>
-      <polygon points="370,101 380,105 370,109" fill="#2B3440"/>
-      <circle cx="353" cy="105" r="10" fill="#1F6F8B"/>
+      <line x1="330" y1="105" x2="372" y2="105" stroke="#313638" stroke-width="1.5"/>
+      <polygon points="370,101 380,105 370,109" fill="#313638"/>
+      <circle cx="353" cy="105" r="10" fill="#FF5500"/>
       <text x="353" y="109" text-anchor="middle" font-size="11" fill="white" font-weight="700">2</text>
-      <line x1="515" y1="105" x2="557" y2="105" stroke="#2B3440" stroke-width="1.5"/>
-      <polygon points="555,101 565,105 555,109" fill="#2B3440"/>
-      <circle cx="538" cy="105" r="10" fill="#1F6F8B"/>
+      <line x1="515" y1="105" x2="557" y2="105" stroke="#313638" stroke-width="1.5"/>
+      <polygon points="555,101 565,105 555,109" fill="#313638"/>
+      <circle cx="538" cy="105" r="10" fill="#FF5500"/>
       <text x="538" y="109" text-anchor="middle" font-size="11" fill="white" font-weight="700">3</text>
 
-      <rect x="195" y="220" width="320" height="56" rx="8" fill="#2B3440"/>
+      <rect x="195" y="220" width="320" height="56" rx="8" fill="#313638"/>
       <text x="355" y="243" text-anchor="middle" font-size="11" fill="white" font-weight="700">nsconv-collect-evidence.sh</text>
       <text x="355" y="262" text-anchor="middle" font-size="10" fill="white">captures 1 and 2, status, logs, FlowLink log → .tgz</text>
-      <line x1="262" y1="170" x2="262" y2="212" stroke="#2B3440" stroke-width="1.5" stroke-dasharray="6,4"/>
-      <polygon points="258,210 262,220 266,210" fill="#2B3440"/>
-      <line x1="447" y1="170" x2="447" y2="212" stroke="#2B3440" stroke-width="1.5" stroke-dasharray="6,4"/>
-      <polygon points="443,210 447,220 451,210" fill="#2B3440"/>
-      <line x1="515" y1="248" x2="557" y2="248" stroke="#2B3440" stroke-width="1.5" stroke-dasharray="6,4"/>
-      <polygon points="555,244 565,248 555,252" fill="#2B3440"/>
-      <text x="627" y="244" text-anchor="middle" font-size="10" fill="#2B3440" font-weight="700">.tgz to your</text>
-      <text x="627" y="258" text-anchor="middle" font-size="10" fill="#2B3440" font-weight="700">contact for this test</text>
+      <line x1="262" y1="170" x2="262" y2="212" stroke="#313638" stroke-width="1.5" stroke-dasharray="6,4"/>
+      <polygon points="258,210 262,220 266,210" fill="#313638"/>
+      <line x1="447" y1="170" x2="447" y2="212" stroke="#313638" stroke-width="1.5" stroke-dasharray="6,4"/>
+      <polygon points="443,210 447,220 451,210" fill="#313638"/>
+      <line x1="515" y1="248" x2="557" y2="248" stroke="#313638" stroke-width="1.5" stroke-dasharray="6,4"/>
+      <polygon points="555,244 565,248 555,252" fill="#313638"/>
+      <text x="627" y="244" text-anchor="middle" font-size="10" fill="#313638" font-weight="700">.tgz to your</text>
+      <text x="627" y="258" text-anchor="middle" font-size="10" fill="#313638" font-weight="700">contact for this test</text>
     </svg>
   </figure>
   <div class="tw"><table>
